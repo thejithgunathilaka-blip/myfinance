@@ -5,528 +5,484 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="MyFinance">
-<title>MyFinance</title>
+<meta name="apple-mobile-web-app-title" content="TJ Finance">
+<title>TJ Family Finance</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
-  :root {
-    --bg:#0f0f12;--bg2:#16161c;--bg3:#1e1e28;--bg4:#252530;
-    --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);
-    --text:#f0f0f5;--text2:#9090a8;--text3:#5a5a72;
-    --accent:#6c63ff;--accent2:#8b85ff;
-    --green:#34d399;--green-bg:rgba(52,211,153,0.1);
-    --amber:#fbbf24;--amber-bg:rgba(251,191,36,0.1);
-    --red:#f87171;--red-bg:rgba(248,113,113,0.1);
-    --blue:#60a5fa;--blue-bg:rgba(96,165,250,0.1);
-    --radius:14px;--radius-sm:8px;--radius-xs:6px;
-    --font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;
-  }
-  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-  body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:80px;overflow-x:hidden;}
-  .header{padding:52px 20px 16px;background:linear-gradient(180deg,rgba(108,99,255,0.15) 0%,transparent 100%);border-bottom:1px solid var(--border);}
-  .header-top{display:flex;justify-content:space-between;align-items:flex-start;}
-  .header-greeting{font-size:13px;color:var(--text3);font-weight:400;margin-bottom:4px;}
-  .header-title{font-size:24px;font-weight:600;letter-spacing:-0.5px;}
-  .header-date{font-size:12px;color:var(--text3);margin-top:2px;}
-  .settings-btn{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
-  .budget-card{margin:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:20px;}
-  .ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
-  .ring-wrap svg{transform:rotate(-90deg);}
-  .ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
-  .ring-pct{font-size:18px;font-weight:600;}
-  .ring-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
-  .budget-info{flex:1;}
-  .budget-row{display:flex;justify-content:space-between;margin-bottom:8px;}
-  .budget-item-label{font-size:11px;color:var(--text3);}
-  .budget-item-val{font-size:13px;font-weight:500;}
-  .budget-item-val.green{color:var(--green);}
-  .budget-item-val.red{color:var(--red);}
-  .mini-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:4px;}
-  .mini-bar-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
-  .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100;}
-  .nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0;}
-  .nav-icon{font-size:20px;}
-  .nav-label{font-size:10px;color:var(--text3);}
-  .nav-item.active .nav-label{color:var(--accent2);}
-  .nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(108,99,255,0.8));}
-  .page{display:none;padding:0 20px;}
-  .page.active{display:block;}
-  .section-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;}
-  .section-title{font-size:13px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;}
-  .section-action{font-size:12px;color:var(--accent2);cursor:pointer;}
-  .card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
-  .card-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);}
-  .card-row:last-child{border-bottom:none;}
-  .m-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg3);}
-  .exp-name{font-size:14px;font-weight:500;}
-  .exp-meta{font-size:11px;color:var(--text3);margin-top:2px;}
-  .exp-amount{margin-left:auto;font-size:14px;font-weight:600;font-family:var(--mono);}
-  .exp-amount.neg{color:var(--red);}
-  .exp-amount.pos{color:var(--green);}
-  .cat-pill{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;display:inline-block;margin-top:3px;}
-  .field{margin-bottom:14px;}
-  .field-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;}
-  .field-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;}
-  .field-input:focus{border-color:var(--accent);}
-  .field-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:11px 14px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;appearance:none;}
-  .big-amount-wrap{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
-  .big-prefix{font-size:32px;font-weight:300;color:var(--text3);}
-  .big-amount-input{flex:1;background:transparent;border:none;border-bottom:2px solid var(--border2);padding:6px 0;font-size:32px;font-weight:600;color:var(--text);font-family:var(--mono);outline:none;}
-  .big-amount-input:focus{border-bottom-color:var(--accent);}
-  .btn{display:block;width:100%;padding:13px;border-radius:var(--radius-sm);font-size:14px;font-weight:600;cursor:pointer;border:none;text-align:center;font-family:var(--font);}
-  .btn-primary{background:var(--accent);color:#fff;}
-  .btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);margin-top:8px;}
-  .chip-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
-  .chip{font-size:12px;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);cursor:pointer;color:var(--text2);background:var(--bg3);}
-  .chip.selected{background:rgba(108,99,255,0.2);border-color:var(--accent);color:var(--accent2);}
-  .cat-budget-row{padding:14px;border-bottom:1px solid var(--border);}
-  .cat-budget-row:last-child{border-bottom:none;}
-  .cbr-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
-  .cbr-name{font-size:14px;font-weight:500;flex:1;}
-  .cbr-amounts{font-size:12px;color:var(--text3);font-family:var(--mono);}
-  .cbr-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
-  .cbr-fill{height:100%;border-radius:3px;transition:width 0.5s ease;}
-  .cbr-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
-  .cbr-status{font-size:11px;}
-  .cbr-edit{font-size:11px;color:var(--accent2);cursor:pointer;padding:2px 8px;border:1px solid var(--border);border-radius:20px;}
-  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;align-items:flex-end;justify-content:center;}
-  .modal-overlay.open{display:flex;}
-  .modal{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;border:1px solid var(--border);border-bottom:none;padding:20px;width:100%;max-width:430px;padding-bottom:40px;}
-  .modal-handle{width:36px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 16px;}
-  .modal-title{font-size:16px;font-weight:600;margin-bottom:16px;}
-  .search-wrap{position:relative;margin-bottom:10px;}
-  .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
-  .search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px 10px 36px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;}
-  .search-input:focus{border-color:var(--accent);}
-  .merchant-list{max-height:240px;overflow-y:auto;}
-  .merchant-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:var(--radius-xs);cursor:pointer;}
-  .merchant-item:active{background:var(--bg3);}
-  .mi-name{font-size:13px;font-weight:500;}
-  .mi-cat{font-size:11px;color:var(--text3);}
-  .mi-check{margin-left:auto;font-size:14px;color:var(--accent);display:none;}
-  .merchant-item.selected .mi-check{display:block;}
-  .date-chips{display:flex;gap:8px;margin-bottom:14px;}
-  .date-chip{flex:1;text-align:center;padding:9px;border-radius:var(--radius-sm);border:1px solid var(--border2);font-size:12px;color:var(--text2);cursor:pointer;}
-  .date-chip.selected{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent2);}
-  .source-chips{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
-  .source-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);font-size:12px;color:var(--text2);cursor:pointer;}
-  .source-chip.selected{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent2);}
-  .upload-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:32px 20px;text-align:center;cursor:pointer;margin-bottom:14px;}
-  .upload-area:active{border-color:var(--accent);background:rgba(108,99,255,0.05);}
-  .upload-icon{font-size:36px;margin-bottom:10px;}
-  .upload-label{font-size:14px;font-weight:500;margin-bottom:4px;}
-  .upload-sub{font-size:12px;color:var(--text3);}
-  .bank-tx-row{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
-  .bank-tx-row:last-child{border-bottom:none;}
-  .bank-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
-  .bank-info{flex:1;}
-  .bank-name{font-size:13px;font-weight:500;}
-  .bank-raw{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
-  .bank-match{font-size:10px;padding:2px 7px;border-radius:20px;margin-top:4px;display:inline-block;}
-  .match-ok{background:var(--green-bg);color:var(--green);}
-  .match-warn{background:var(--amber-bg);color:var(--amber);}
-  .match-bad{background:var(--red-bg);color:var(--red);}
-  .bank-amount{font-size:13px;font-weight:600;font-family:var(--mono);color:var(--red);}
-  .insight-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .insight-name{font-size:13px;width:110px;flex-shrink:0;}
-  .insight-bar-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;}
-  .insight-bar-fill{height:100%;border-radius:4px;}
-  .insight-val{font-size:12px;font-family:var(--mono);color:var(--text2);width:50px;text-align:right;}
-  .toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:10px 18px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
-  .toast.show{opacity:1;}
-  .settings-row{display:flex;align-items:center;padding:14px;border-bottom:1px solid var(--border);}
-  .settings-row:last-child{border-bottom:none;}
-  .settings-label{font-size:14px;flex:1;}
-  .settings-input{background:var(--bg4);border:1px solid var(--border);border-radius:var(--radius-xs);padding:6px 10px;font-size:13px;color:var(--text);font-family:var(--mono);width:100px;text-align:right;outline:none;}
-  .settings-input:focus{border-color:var(--accent);}
-  .empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;}
-  .empty-icon{font-size:40px;margin-bottom:10px;}
-  .sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
-  .sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
-  .sum-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
-  .sum-val{font-size:20px;font-weight:600;font-family:var(--mono);}
-  .income-badge{background:rgba(52,211,153,0.1);color:#34d399;}
-  .food-badge{background:rgba(251,191,36,0.1);color:#fbbf24;}
-  .grocery-badge{background:rgba(52,211,153,0.1);color:#34d399;}
-  .transport-badge{background:rgba(96,165,250,0.1);color:#60a5fa;}
-  .housing-badge{background:rgba(167,139,250,0.1);color:#a78bfa;}
-  .subs-badge{background:rgba(236,72,153,0.1);color:#ec4899;}
-  .health-badge{background:rgba(248,113,113,0.1);color:#f87171;}
-  .other-badge{background:var(--bg4);color:var(--text3);}
-  .page-title{font-size:20px;font-weight:600;letter-spacing:-0.3px;padding:20px 0 4px;}
-  .page-sub{font-size:13px;color:var(--text3);margin-bottom:4px;}
-  input[type=file]{display:none;}
-  input[type=range]{width:100%;accent-color:var(--accent);}
-
-  /* ── RECEIPT SCANNER ── */
-  .scan-tabs{display:flex;gap:0;margin-bottom:16px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;}
-  .scan-tab{flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);}
-  .scan-tab.active{background:var(--accent);color:#fff;}
-  .scan-panel{display:none;}
-  .scan-panel.active{display:block;}
-  .camera-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:14px;position:relative;overflow:hidden;}
-  .camera-area:active{border-color:var(--accent);}
-  .camera-icon{font-size:42px;margin-bottom:10px;}
-  .camera-label{font-size:15px;font-weight:600;margin-bottom:4px;}
-  .camera-sub{font-size:12px;color:var(--text3);}
-  .receipt-preview{width:100%;max-height:220px;object-fit:contain;border-radius:var(--radius-sm);margin-bottom:12px;display:none;}
-  .ai-result-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none;}
-  .ai-result-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-  .ai-badge{font-size:11px;background:rgba(108,99,255,0.2);color:var(--accent2);padding:3px 10px;border-radius:20px;font-weight:500;}
-  .ai-result-row{display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border);}
-  .ai-result-row:last-child{border-bottom:none;}
-  .ai-result-label{font-size:12px;color:var(--text3);}
-  .ai-result-val{font-size:13px;font-weight:600;}
-  .ai-result-val.editable{color:var(--accent2);cursor:pointer;border-bottom:1px dashed var(--accent);}
-  .scanning-overlay{display:none;flex-direction:column;align-items:center;justify-content:center;padding:30px;gap:12px;}
-  .scanning-overlay.show{display:flex;}
-  .scan-spinner{width:40px;height:40px;border:3px solid var(--bg4);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-  .scan-step{font-size:13px;color:var(--text2);text-align:center;}
-  .privacy-note{background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.2);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--green);margin-bottom:14px;line-height:1.5;}
-  .api-key-setup{background:var(--bg3);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;}
-  .api-key-title{font-size:13px;font-weight:600;color:var(--amber);margin-bottom:6px;}
-  .api-key-sub{font-size:12px;color:var(--text3);margin-bottom:10px;line-height:1.5;}
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+:root{--bg:#0f0f12;--bg2:#16161c;--bg3:#1e1e28;--bg4:#252530;--border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.12);--text:#f0f0f5;--text2:#9090a8;--text3:#5a5a72;--accent:#6c63ff;--accent2:#8b85ff;--green:#34d399;--red:#f87171;--amber:#fbbf24;--blue:#60a5fa;--radius:14px;--radius-sm:8px;--font:'DM Sans',sans-serif;--mono:'DM Mono',monospace;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;max-width:430px;margin:0 auto;padding-bottom:80px;overflow-x:hidden;}
+.login-page{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:30px 24px;}
+.login-logo{font-size:56px;margin-bottom:16px;}
+.login-title{font-size:26px;font-weight:600;letter-spacing:-0.5px;margin-bottom:6px;}
+.login-sub{font-size:13px;color:var(--text3);margin-bottom:36px;text-align:center;line-height:1.6;}
+.login-card{width:100%;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:24px;}
+.field-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;margin-bottom:6px;display:block;}
+.field-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:15px;color:var(--text);font-family:var(--font);outline:none;margin-bottom:14px;}
+.field-input:focus{border-color:var(--accent);}
+.field-select{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;appearance:none;}
+.btn{display:block;width:100%;padding:13px;border-radius:var(--radius-sm);font-size:15px;font-weight:600;cursor:pointer;border:none;text-align:center;font-family:var(--font);transition:opacity 0.2s;}
+.btn:active{opacity:0.8;}
+.btn-primary{background:var(--accent);color:#fff;}
+.btn-outline{background:transparent;border:1px solid var(--border2);color:var(--text2);margin-top:8px;font-size:14px;}
+.user-switch{display:flex;gap:8px;margin-bottom:20px;width:100%;}
+.user-btn{flex:1;padding:12px;border-radius:var(--radius-sm);border:1px solid var(--border2);font-size:15px;font-weight:500;cursor:pointer;font-family:var(--font);background:var(--bg3);color:var(--text2);text-align:center;transition:all 0.2s;}
+.user-btn:active{opacity:0.8;}
+.user-btn.active{background:rgba(108,99,255,0.25);border-color:var(--accent);color:var(--accent2);}
+.error-msg{background:rgba(248,113,113,0.1);border:1px solid rgba(248,113,113,0.3);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:var(--red);margin-bottom:14px;display:none;}
+.app{display:none;}
+.header{padding:52px 20px 16px;background:linear-gradient(180deg,rgba(108,99,255,0.15) 0%,transparent 100%);border-bottom:1px solid var(--border);}
+.header-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.header-greeting{font-size:13px;color:var(--text3);margin-bottom:4px;}
+.header-title{font-size:24px;font-weight:600;letter-spacing:-0.5px;}
+.header-date{font-size:12px;color:var(--text3);margin-top:2px;}
+.icon-btn{width:36px;height:36px;border-radius:50%;background:var(--bg3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;}
+.budget-card{margin:16px 20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);padding:20px;display:flex;align-items:center;gap:20px;}
+.ring-wrap{position:relative;width:90px;height:90px;flex-shrink:0;}
+.ring-wrap svg{transform:rotate(-90deg);}
+.ring-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;}
+.ring-pct{font-size:18px;font-weight:600;}
+.ring-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;}
+.budget-info{flex:1;}
+.budget-row{display:flex;justify-content:space-between;margin-bottom:8px;}
+.budget-item-label{font-size:11px;color:var(--text3);}
+.budget-item-val{font-size:13px;font-weight:500;}
+.budget-item-val.green{color:var(--green);}
+.budget-item-val.red{color:var(--red);}
+.mini-bar{height:4px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-top:4px;}
+.mini-bar-fill{height:100%;border-radius:2px;transition:width 0.6s ease;}
+.nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;background:var(--bg2);border-top:1px solid var(--border);display:flex;padding:8px 0 20px;z-index:100;}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;padding:6px 0;}
+.nav-icon{font-size:20px;}
+.nav-label{font-size:10px;color:var(--text3);}
+.nav-item.active .nav-label{color:var(--accent2);}
+.nav-item.active .nav-icon{filter:drop-shadow(0 0 6px rgba(108,99,255,0.8));}
+.page{display:none;padding:0 20px;padding-bottom:80px;}
+.page.active{display:block;}
+.section-head{display:flex;justify-content:space-between;align-items:center;margin:20px 0 10px;}
+.section-title{font-size:13px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.06em;}
+.section-action{font-size:12px;color:var(--accent2);cursor:pointer;}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:12px;}
+.card-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-bottom:1px solid var(--border);}
+.card-row:last-child{border-bottom:none;}
+.m-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;background:var(--bg3);}
+.exp-name{font-size:14px;font-weight:500;}
+.exp-meta{font-size:11px;color:var(--text3);margin-top:2px;}
+.exp-amount{margin-left:auto;font-size:14px;font-weight:600;font-family:var(--mono);}
+.exp-amount.neg{color:var(--red);}
+.exp-amount.pos{color:var(--green);}
+.cat-pill{font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;display:inline-block;margin-top:3px;}
+.who-badge{font-size:10px;padding:2px 7px;border-radius:20px;margin-left:4px;font-weight:500;}
+.who-you{background:rgba(108,99,255,0.15);color:var(--accent2);}
+.who-wife{background:rgba(236,72,153,0.15);color:#ec4899;}
+.big-amount-wrap{display:flex;align-items:center;gap:8px;margin-bottom:14px;}
+.big-prefix{font-size:32px;font-weight:300;color:var(--text3);}
+.big-amount-input{flex:1;background:transparent;border:none;border-bottom:2px solid var(--border2);padding:6px 0;font-size:32px;font-weight:600;color:var(--text);font-family:var(--mono);outline:none;}
+.big-amount-input:focus{border-bottom-color:var(--accent);}
+.chip-grid{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.chip{font-size:12px;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);cursor:pointer;color:var(--text2);background:var(--bg3);}
+.chip.selected{background:rgba(108,99,255,0.2);border-color:var(--accent);color:var(--accent2);}
+.date-chips{display:flex;gap:8px;margin-bottom:14px;}
+.date-chip{flex:1;text-align:center;padding:9px;border-radius:var(--radius-sm);border:1px solid var(--border2);font-size:12px;color:var(--text2);cursor:pointer;}
+.date-chip.selected{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent2);}
+.source-chips{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.source-chip{padding:6px 12px;border-radius:20px;border:1px solid var(--border2);font-size:12px;color:var(--text2);cursor:pointer;}
+.source-chip.selected{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent2);}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:200;align-items:flex-end;justify-content:center;}
+.modal-overlay.open{display:flex;}
+.modal{background:var(--bg2);border-radius:var(--radius) var(--radius) 0 0;border:1px solid var(--border);padding:20px;width:100%;max-width:430px;padding-bottom:40px;max-height:80vh;overflow-y:auto;}
+.modal-handle{width:36px;height:4px;background:var(--bg4);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-size:16px;font-weight:600;margin-bottom:16px;}
+.search-wrap{position:relative;margin-bottom:10px;}
+.search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;}
+.search-input{width:100%;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:10px 12px 10px 36px;font-size:14px;color:var(--text);font-family:var(--font);outline:none;}
+.merchant-list{max-height:260px;overflow-y:auto;}
+.merchant-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:6px;cursor:pointer;}
+.merchant-item:active{background:var(--bg3);}
+.mi-name{font-size:13px;font-weight:500;}
+.mi-cat{font-size:11px;color:var(--text3);}
+.mi-check{margin-left:auto;font-size:14px;color:var(--accent);display:none;}
+.merchant-item.selected .mi-check{display:block;}
+.cat-budget-row{padding:14px;border-bottom:1px solid var(--border);}
+.cat-budget-row:last-child{border-bottom:none;}
+.cbr-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.cbr-name{font-size:14px;font-weight:500;flex:1;}
+.cbr-amounts{font-size:12px;color:var(--text3);font-family:var(--mono);}
+.cbr-bar{height:6px;background:var(--bg4);border-radius:3px;overflow:hidden;}
+.cbr-fill{height:100%;border-radius:3px;}
+.cbr-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:6px;}
+.cbr-status{font-size:11px;}
+.cbr-edit{font-size:11px;color:var(--accent2);cursor:pointer;padding:2px 8px;border:1px solid var(--border);border-radius:20px;}
+.upload-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:12px;}
+.upload-icon{font-size:36px;margin-bottom:10px;}
+.upload-label{font-size:14px;font-weight:500;margin-bottom:4px;}
+.upload-sub{font-size:12px;color:var(--text3);}
+.stmt-type-chips{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;}
+.stmt-chip{padding:7px 14px;border-radius:20px;border:1px solid var(--border2);font-size:12px;color:var(--text2);cursor:pointer;font-weight:500;}
+.stmt-chip.selected{background:rgba(108,99,255,0.15);border-color:var(--accent);color:var(--accent2);}
+.bank-tx-row{padding:12px 14px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;gap:10px;}
+.bank-tx-row:last-child{border-bottom:none;}
+.bank-dot{width:8px;height:8px;border-radius:50%;margin-top:5px;flex-shrink:0;}
+.bank-info{flex:1;}
+.bank-name{font-size:13px;font-weight:500;}
+.bank-raw{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:2px;}
+.bank-match{font-size:10px;padding:2px 7px;border-radius:20px;margin-top:4px;display:inline-block;}
+.match-ok{background:rgba(52,211,153,0.1);color:#34d399;}
+.match-bad{background:rgba(248,113,113,0.1);color:#f87171;}
+.bank-amount{font-size:13px;font-weight:600;font-family:var(--mono);}
+.insight-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.insight-name{font-size:13px;width:120px;flex-shrink:0;}
+.insight-bar-track{flex:1;height:8px;background:var(--bg4);border-radius:4px;overflow:hidden;}
+.insight-bar-fill{height:100%;border-radius:4px;}
+.insight-val{font-size:12px;font-family:var(--mono);color:var(--text2);width:55px;text-align:right;}
+.month-bar-wrap{display:flex;align-items:flex-end;gap:6px;height:100px;margin-bottom:8px;}
+.month-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.month-bar{width:100%;border-radius:4px 4px 0 0;background:var(--accent);min-height:4px;}
+.month-bar-label{font-size:9px;color:var(--text3);}
+.month-bar-val{font-size:9px;color:var(--text2);font-family:var(--mono);}
+.sum-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.sum-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px;}
+.sum-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;}
+.sum-val{font-size:20px;font-weight:600;font-family:var(--mono);}
+.settings-row{display:flex;align-items:center;padding:14px;border-bottom:1px solid var(--border);}
+.settings-row:last-child{border-bottom:none;}
+.settings-label{font-size:14px;flex:1;}
+.settings-input{background:var(--bg4);border:1px solid var(--border);border-radius:6px;padding:6px 10px;font-size:13px;color:var(--text);font-family:var(--mono);width:100px;text-align:right;outline:none;}
+.privacy-note{background:rgba(52,211,153,0.07);border:1px solid rgba(52,211,153,0.2);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--green);margin-bottom:14px;line-height:1.5;}
+.info-note{background:rgba(96,165,250,0.07);border:1px solid rgba(96,165,250,0.2);border-radius:var(--radius-sm);padding:10px 14px;font-size:12px;color:var(--blue);margin-bottom:14px;line-height:1.5;}
+.toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:10px 18px;font-size:13px;font-weight:500;z-index:300;opacity:0;transition:opacity 0.3s;white-space:nowrap;}
+.toast.show{opacity:1;}
+.empty{text-align:center;padding:40px 20px;color:var(--text3);font-size:14px;}
+.empty-icon{font-size:40px;margin-bottom:10px;}
+.page-title{font-size:20px;font-weight:600;letter-spacing:-0.3px;padding:20px 0 4px;}
+.page-sub{font-size:13px;color:var(--text3);margin-bottom:8px;}
+.scan-tabs{display:flex;gap:0;margin-bottom:16px;background:var(--bg3);border-radius:var(--radius-sm);padding:3px;}
+.scan-tab{flex:1;text-align:center;padding:8px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text3);}
+.scan-tab.active{background:var(--accent);color:#fff;}
+.scan-panel{display:none;}
+.scan-panel.active{display:block;}
+.camera-area{border:2px dashed var(--border2);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;margin-bottom:14px;}
+.camera-icon{font-size:42px;margin-bottom:10px;}
+.camera-label{font-size:15px;font-weight:600;margin-bottom:4px;}
+.camera-sub{font-size:12px;color:var(--text3);}
+.receipt-preview{width:100%;max-height:200px;object-fit:contain;border-radius:var(--radius-sm);margin-bottom:12px;display:none;}
+.ai-result-card{background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px;display:none;}
+.ai-result-row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);}
+.ai-result-row:last-child{border-bottom:none;}
+.ai-result-label{font-size:12px;color:var(--text3);}
+.ai-result-val{font-size:13px;font-weight:600;}
+.scanning-overlay{display:none;flex-direction:column;align-items:center;padding:30px;gap:12px;}
+.scanning-overlay.show{display:flex;}
+.scan-spinner{width:40px;height:40px;border:3px solid var(--bg4);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.food-badge{background:rgba(251,191,36,0.1);color:#fbbf24;}
+.grocery-badge{background:rgba(52,211,153,0.1);color:#34d399;}
+.transport-badge{background:rgba(96,165,250,0.1);color:#60a5fa;}
+.housing-badge{background:rgba(167,139,250,0.1);color:#a78bfa;}
+.subs-badge{background:rgba(236,72,153,0.1);color:#ec4899;}
+.health-badge{background:rgba(248,113,113,0.1);color:#f87171;}
+.income-badge{background:rgba(52,211,153,0.1);color:#34d399;}
+.other-badge{background:rgba(144,144,168,0.1);color:#9090a8;}
+input[type=file]{display:none;}
+input[type=range]{width:100%;accent-color:var(--accent);}
 </style>
 </head>
 <body>
 
-<div class="header">
-  <div class="header-top">
-    <div>
-      <div class="header-greeting">Good day 👋</div>
-      <div class="header-title">MyFinance</div>
-      <div class="header-date" id="header-date"></div>
-    </div>
-    <div class="settings-btn" onclick="showPage('settings')">⚙️</div>
+<div id="login-page" class="login-page">
+  <div class="login-logo">💰</div>
+  <div class="login-title">TJ Family Finance</div>
+  <div class="login-sub">Private &amp; secure — only you and your wife</div>
+  <div class="user-switch">
+    <div class="user-btn active" id="ubtn-you" onclick="switchUser('you')">👨 Thejith</div>
+    <div class="user-btn" id="ubtn-wife" onclick="switchUser('wife')">👩 Wife</div>
   </div>
+  <div class="login-card">
+    <label class="field-label">Password</label>
+    <div class="error-msg" id="login-error">Incorrect password. Please try again.</div>
+    <input class="field-input" type="password" id="login-password" placeholder="Enter your password">
+    <button class="btn btn-primary" id="login-btn" type="button">Sign in</button>
+  </div>
+  <div style="font-size:12px;color:var(--text3);margin-top:20px;text-align:center;">Default password: family2024</div>
 </div>
 
-<div class="budget-card">
-  <div class="ring-wrap">
-    <svg width="90" height="90" viewBox="0 0 90 90">
-      <circle cx="45" cy="45" r="38" fill="none" stroke="#1e1e28" stroke-width="8"/>
-      <circle id="ring-progress" cx="45" cy="45" r="38" fill="none" stroke="#6c63ff" stroke-width="8"
-        stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="239"
-        style="transition:stroke-dashoffset 0.8s ease"/>
-    </svg>
-    <div class="ring-center">
-      <div class="ring-pct" id="ring-pct">0%</div>
-      <div class="ring-label">used</div>
+<div id="app" class="app">
+  <div class="header">
+    <div class="header-top">
+      <div>
+        <div class="header-greeting" id="header-greeting">Good day</div>
+        <div class="header-title">TJ Family Finance</div>
+        <div class="header-date" id="header-date"></div>
+      </div>
+      <div style="display:flex;gap:8px;">
+        <div class="icon-btn" onclick="showPage('settings')">&#9881;</div>
+        <div class="icon-btn" onclick="doLogout()">&#128682;</div>
+      </div>
     </div>
   </div>
-  <div class="budget-info">
-    <div class="budget-row"><span class="budget-item-label">Budget</span><span class="budget-item-val" id="bi-budget">$0</span></div>
-    <div class="budget-row"><span class="budget-item-label">Spent</span><span class="budget-item-val red" id="bi-spent">$0</span></div>
-    <div class="budget-row"><span class="budget-item-label">Available</span><span class="budget-item-val green" id="bi-left">$0</span></div>
-    <div class="mini-bar"><div class="mini-bar-fill" id="mini-bar-fill" style="background:var(--green);width:0%"></div></div>
-  </div>
-</div>
 
-<!-- PAGES -->
-<div class="page active" id="page-dashboard">
-  <div class="section-head"><span class="section-title">Today's expenses</span><span class="section-action" onclick="showPage('add')">+ Add</span></div>
-  <div class="card" id="today-list"><div class="empty"><div class="empty-icon">🧾</div>No expenses today yet</div></div>
-  <div class="section-head"><span class="section-title">This month</span></div>
-  <div class="sum-grid">
-    <div class="sum-card"><div class="sum-label">Income</div><div class="sum-val green" id="sum-income">$0</div></div>
-    <div class="sum-card"><div class="sum-label">Expenses</div><div class="sum-val red" id="sum-expenses">$0</div></div>
-  </div>
-  <div class="section-head"><span class="section-title">Recent transactions</span></div>
-  <div class="card" id="recent-list"><div class="empty"><div class="empty-icon">💳</div>No transactions yet</div></div>
-</div>
-
-<!-- ADD PAGE -->
-<div class="page" id="page-add">
-  <div class="page-title">Add expense</div>
-
-  <!-- Scan tabs -->
-  <div class="scan-tabs" style="margin-top:16px">
-    <div class="scan-tab active" id="tab-scan" onclick="switchAddTab('scan')">📸 Scan receipt</div>
-    <div class="scan-tab" id="tab-manual" onclick="switchAddTab('manual')">✏️ Manual entry</div>
-  </div>
-
-  <!-- SCAN PANEL -->
-  <div class="scan-panel active" id="scan-panel">
-
-    <div class="privacy-note">
-      📸 Only your receipt photo is sent to AI — briefly, to read the text.<br>
-      Your bank details and spending history are never shared.
+  <div class="budget-card">
+    <div class="ring-wrap">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle cx="45" cy="45" r="38" fill="none" stroke="#1e1e28" stroke-width="8"/>
+        <circle id="ring-progress" cx="45" cy="45" r="38" fill="none" stroke="#6c63ff" stroke-width="8" stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="239" style="transition:stroke-dashoffset 0.8s ease"/>
+      </svg>
+      <div class="ring-center"><div class="ring-pct" id="ring-pct">0%</div><div class="ring-label">used</div></div>
     </div>
-
-    <!-- API key setup -->
-    <div class="api-key-setup" id="api-key-setup" style="display:none">
-      <div class="api-key-title">⚠️ One-time setup needed</div>
-      <div class="api-key-sub">To scan receipts, enter your free Anthropic API key below. Get one free at console.anthropic.com → API Keys. It stays only on your device.</div>
-      <input class="field-input" type="password" id="api-key-input" placeholder="sk-ant-..." style="margin-bottom:8px">
-      <button class="btn btn-primary" onclick="saveApiKey()">Save API key</button>
+    <div class="budget-info">
+      <div class="budget-row"><span class="budget-item-label">Budget</span><span class="budget-item-val" id="bi-budget">$0</span></div>
+      <div class="budget-row"><span class="budget-item-label">Spent</span><span class="budget-item-val red" id="bi-spent">$0</span></div>
+      <div class="budget-row"><span class="budget-item-label">Available</span><span class="budget-item-val green" id="bi-left">$0</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" id="mini-bar-fill" style="background:var(--green);width:0%"></div></div>
     </div>
+  </div>
 
-    <div id="scan-ready">
-      <label for="receipt-input">
-        <div class="camera-area">
-          <div class="camera-icon">📸</div>
-          <div class="camera-label">Take photo of receipt</div>
-          <div class="camera-sub">Or tap to choose from your photos</div>
+  <div class="page active" id="page-dashboard">
+    <div class="section-head"><span class="section-title">Today</span><span class="section-action" onclick="showPage('add')">+ Add</span></div>
+    <div class="card" id="today-list"><div class="empty"><div class="empty-icon">&#x1F9FE;</div>No expenses today</div></div>
+    <div class="section-head"><span class="section-title">This month</span></div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-label">Income</div><div class="sum-val green" id="sum-income">$0</div></div>
+      <div class="sum-card"><div class="sum-label">Expenses</div><div class="sum-val red" id="sum-expenses">$0</div></div>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-label">Thejith</div><div class="sum-val" id="who-you" style="color:var(--accent2)">$0</div></div>
+      <div class="sum-card"><div class="sum-label">Wife</div><div class="sum-val" id="who-wife" style="color:#ec4899">$0</div></div>
+    </div>
+    <div class="section-head"><span class="section-title">Recent</span></div>
+    <div class="card" id="recent-list"><div class="empty"><div class="empty-icon">&#x1F4B3;</div>No transactions yet</div></div>
+  </div>
+
+  <div class="page" id="page-add">
+    <div class="page-title">Add expense</div>
+    <div class="scan-tabs" style="margin-top:16px">
+      <div class="scan-tab active" id="tab-scan" onclick="switchAddTab('scan')">&#x1F4F8; Scan receipt</div>
+      <div class="scan-tab" id="tab-manual" onclick="switchAddTab('manual')">&#x270F; Manual</div>
+    </div>
+    <div class="scan-panel active" id="scan-panel">
+      <div class="privacy-note">Only the receipt photo is sent to AI briefly. Your bank data stays private.</div>
+      <div id="api-key-setup" style="display:none;background:var(--bg3);border:1px solid var(--amber);border-radius:var(--radius-sm);padding:14px;margin-bottom:14px">
+        <div style="font-size:13px;font-weight:600;color:var(--amber);margin-bottom:6px">API key needed for scanning</div>
+        <div style="font-size:12px;color:var(--text3);margin-bottom:10px">Get free at console.anthropic.com</div>
+        <input class="field-input" type="password" id="api-key-input" placeholder="sk-ant-..." style="margin-bottom:8px">
+        <button class="btn btn-primary" type="button" onclick="saveApiKey()">Save key</button>
+      </div>
+      <div id="scan-ready">
+        <label for="receipt-input"><div class="camera-area"><div class="camera-icon">&#x1F4F8;</div><div class="camera-label">Take photo of receipt</div><div class="camera-sub">AI reads it automatically</div></div></label>
+        <input type="file" id="receipt-input" accept="image/*" capture="environment">
+      </div>
+      <div class="scanning-overlay" id="scanning-overlay"><div class="scan-spinner"></div><div style="font-size:13px;color:var(--text2)" id="scan-step-text">Reading receipt...</div></div>
+      <img id="receipt-preview" class="receipt-preview">
+      <div class="ai-result-card" id="ai-result-card">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span>&#x2705;</span><span style="font-size:14px;font-weight:600">Receipt detected</span></div>
+        <div class="ai-result-row"><span class="ai-result-label">Merchant</span><span class="ai-result-val" id="ai-merchant">-</span></div>
+        <div class="ai-result-row"><span class="ai-result-label">Amount</span><span class="ai-result-val" id="ai-amount">-</span></div>
+        <div class="ai-result-row"><span class="ai-result-label">Date</span><span class="ai-result-val" id="ai-date-det">-</span></div>
+        <div class="ai-result-row"><span class="ai-result-label">Category</span><span class="ai-result-val" id="ai-cat">-</span></div>
+      </div>
+      <div id="scan-confirm" style="display:none">
+        <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Amount</label><div class="big-amount-wrap"><span class="big-prefix">$</span><input class="big-amount-input" type="number" id="scan-amount" step="0.01"></div></div>
+        <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Merchant</label><input class="field-input" type="text" id="scan-merchant"></div>
+        <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Category</label><div class="chip-grid" id="scan-cat-chips"></div></div>
+        <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Paid via</label>
+          <div class="source-chips">
+            <div class="source-chip selected" id="ssrc-card" onclick="selScanSrc('card')">Bank card</div>
+            <div class="source-chip" id="ssrc-app" onclick="selScanSrc('app')">Another app</div>
+            <div class="source-chip" id="ssrc-cash" onclick="selScanSrc('cash')">Cash</div>
+          </div>
         </div>
-      </label>
-      <input type="file" id="receipt-input" accept="image/*" capture="environment" onchange="handleReceiptPhoto(this)">
-    </div>
-
-    <div class="scanning-overlay" id="scanning-overlay">
-      <div class="scan-spinner"></div>
-      <div class="scan-step" id="scan-step-text">Reading receipt...</div>
-    </div>
-
-    <img id="receipt-preview" class="receipt-preview">
-
-    <div class="ai-result-card" id="ai-result-card">
-      <div class="ai-result-header">
-        <span style="font-size:16px">✅</span>
-        <span style="font-size:14px;font-weight:600">Receipt read successfully</span>
-        <span class="ai-badge">AI detected</span>
+        <button class="btn btn-primary" type="button" onclick="saveScanExpense()">Save expense</button>
+        <button class="btn btn-outline" type="button" onclick="resetScan()">Scan another</button>
       </div>
-      <div class="ai-result-row"><span class="ai-result-label">Merchant</span><span class="ai-result-val" id="ai-merchant">—</span></div>
-      <div class="ai-result-row"><span class="ai-result-label">Amount</span><span class="ai-result-val" id="ai-amount">—</span></div>
-      <div class="ai-result-row"><span class="ai-result-label">Date</span><span class="ai-result-val" id="ai-date-detected">—</span></div>
-      <div class="ai-result-row"><span class="ai-result-label">Category</span><span class="ai-result-val" id="ai-cat">—</span></div>
     </div>
-
-    <div id="scan-confirm-area" style="display:none">
-      <div class="field">
-        <div class="field-label">Confirm or edit amount</div>
-        <div class="big-amount-wrap">
-          <span class="big-prefix">$</span>
-          <input class="big-amount-input" type="number" id="scan-amount" step="0.01">
+    <div class="scan-panel" id="manual-panel">
+      <div class="big-amount-wrap" style="margin-top:8px"><span class="big-prefix">$</span><input class="big-amount-input" type="number" id="add-amount" placeholder="0.00" step="0.01"></div>
+      <div style="margin-bottom:14px">
+        <label class="field-label" style="margin-bottom:6px">Merchant</label>
+        <div style="display:flex;gap:8px">
+          <input class="field-input" type="text" id="add-merchant-display" placeholder="Tap to choose..." readonly style="cursor:pointer;flex:1">
+          <div style="padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:16px" onclick="openMerchantModal()">&#x1F50D;</div>
         </div>
       </div>
-      <div class="field">
-        <div class="field-label">Merchant</div>
-        <input class="field-input" type="text" id="scan-merchant">
+      <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Category</label><div class="chip-grid" id="add-cat-chips"></div></div>
+      <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Date</label>
+        <div class="date-chips">
+          <div class="date-chip selected" id="dc-today" onclick="selDate('today')">Today</div>
+          <div class="date-chip" id="dc-yesterday" onclick="selDate('yesterday')">Yesterday</div>
+          <div class="date-chip" id="dc-pick" onclick="selDate('pick')">Pick date</div>
+        </div>
+        <input class="field-input" type="date" id="add-date-picker" style="display:none">
       </div>
-      <div class="field">
-        <div class="field-label">Category</div>
-        <div class="chip-grid" id="scan-cat-chips"></div>
-      </div>
-      <div class="field">
-        <div class="field-label">Paid via</div>
+      <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Paid via</label>
         <div class="source-chips">
-          <div class="source-chip selected" id="ssrc-card" onclick="selectScanSource('card')">Bank card</div>
-          <div class="source-chip" id="ssrc-app" onclick="selectScanSource('app')">Another app</div>
-          <div class="source-chip" id="ssrc-cash" onclick="selectScanSource('cash')">Cash</div>
+          <div class="source-chip selected" id="src-card" onclick="selSrc('card')">Bank card</div>
+          <div class="source-chip" id="src-app" onclick="selSrc('app')">Another app</div>
+          <div class="source-chip" id="src-cash" onclick="selSrc('cash')">Cash</div>
         </div>
       </div>
-      <button class="btn btn-primary" onclick="saveScanExpense()">Save expense</button>
-      <button class="btn btn-outline" onclick="resetScan()">Scan another</button>
+      <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Type</label>
+        <div class="source-chips">
+          <div class="source-chip selected" id="type-exp" onclick="selType('expense')">Expense</div>
+          <div class="source-chip" id="type-inc" onclick="selType('income')">Income</div>
+        </div>
+      </div>
+      <div style="margin-bottom:14px"><label class="field-label" style="margin-bottom:6px">Note</label><input class="field-input" type="text" id="add-note" placeholder="Optional"></div>
+      <button class="btn btn-primary" type="button" onclick="saveExpense()">Save expense</button>
+      <button class="btn btn-outline" type="button" onclick="showPage('dashboard')">Cancel</button>
     </div>
   </div>
 
-  <!-- MANUAL PANEL -->
-  <div class="scan-panel" id="manual-panel">
-    <div class="big-amount-wrap" style="margin-top:8px">
-      <span class="big-prefix">$</span>
-      <input class="big-amount-input" type="number" id="add-amount" placeholder="0.00" step="0.01">
-    </div>
-    <div class="field">
-      <div class="field-label">Merchant</div>
-      <div style="display:flex;gap:8px">
-        <input class="field-input" type="text" id="add-merchant-display" placeholder="Tap to choose..." readonly style="cursor:pointer;flex:1" onclick="openMerchantModal()">
-        <div style="padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:16px" onclick="openMerchantModal()">🔍</div>
+  <div class="page" id="page-categories">
+    <div class="page-title">Category budgets</div>
+    <div class="page-sub" id="cat-month-label"></div>
+    <div class="card" id="cat-budget-list"></div>
+  </div>
+
+  <div class="page" id="page-bank">
+    <div class="page-title">Bank statements</div>
+    <div class="page-sub" style="margin-bottom:12px">Upload CIBC statements</div>
+    <div class="privacy-note">Your bank statement is read in your browser only — never sent anywhere.</div>
+    <div style="margin-bottom:14px">
+      <label class="field-label" style="margin-bottom:8px">Statement type</label>
+      <div class="stmt-type-chips">
+        <div class="stmt-chip selected" id="stype-bank" onclick="selStmtType('bank')">Chequing/Savings</div>
+        <div class="stmt-chip" id="stype-credit" onclick="selStmtType('credit')">Credit Card</div>
+        <div class="stmt-chip" id="stype-loc" onclick="selStmtType('loc')">Line of Credit</div>
       </div>
     </div>
-    <div class="field">
-      <div class="field-label">Category</div>
-      <div class="chip-grid" id="add-cat-chips"></div>
+    <div class="info-note">Open your CIBC PDF statement, select all text (Ctrl+A), copy (Ctrl+C), then paste below. Or upload a CSV export.</div>
+    <div style="margin-bottom:14px">
+      <label class="field-label" style="margin-bottom:6px">Paste statement text or upload CSV</label>
+      <textarea id="stmt-text" style="width:100%;height:120px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--text);font-family:var(--mono);outline:none;resize:vertical" placeholder="Paste your CIBC statement text here..."></textarea>
     </div>
-    <div class="field">
-      <div class="field-label">Date</div>
-      <div class="date-chips">
-        <div class="date-chip selected" id="dc-today" onclick="selectDate('today')">Today</div>
-        <div class="date-chip" id="dc-yesterday" onclick="selectDate('yesterday')">Yesterday</div>
-        <div class="date-chip" id="dc-pick" onclick="selectDate('pick')">Pick date</div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <label for="pdf-input" style="flex:1"><div style="padding:11px;border:1px solid var(--border2);border-radius:var(--radius-sm);text-align:center;font-size:13px;color:var(--text2);cursor:pointer">Upload CSV</div></label>
+      <input type="file" id="pdf-input" accept=".csv,.txt">
+      <button class="btn btn-primary" type="button" style="flex:1;padding:11px;font-size:13px" onclick="parseStatement()">Parse statement</button>
+    </div>
+    <div id="bank-results" style="display:none">
+      <div class="section-head"><span class="section-title" id="bank-result-title">Transactions</span><span class="section-action" id="bank-match-summary"></span></div>
+      <div class="card" id="bank-tx-list"></div>
+      <button class="btn btn-primary" type="button" onclick="importMatched()" style="margin-top:4px">Import matched transactions</button>
+      <button class="btn btn-outline" type="button" onclick="importAll()">Import all</button>
+    </div>
+  </div>
+
+  <div class="page" id="page-insights">
+    <div class="page-title">Insights</div>
+    <div class="page-sub" id="insights-sub" style="margin-bottom:16px"></div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-label">Total spent</div><div class="sum-val red" id="ins-spent">$0</div></div>
+      <div class="sum-card"><div class="sum-label">Remaining</div><div class="sum-val green" id="ins-left">$0</div></div>
+    </div>
+    <div class="sum-grid">
+      <div class="sum-card"><div class="sum-label">Thejith</div><div class="sum-val" id="ins-you" style="color:var(--accent2)">$0</div></div>
+      <div class="sum-card"><div class="sum-label">Wife</div><div class="sum-val" id="ins-wife" style="color:#ec4899">$0</div></div>
+    </div>
+    <div class="section-head"><span class="section-title">6 month trend</span></div>
+    <div class="card" style="padding:16px"><div class="month-bar-wrap" id="month-bars"></div></div>
+    <div class="section-head"><span class="section-title">By category</span></div>
+    <div class="card" style="padding:16px" id="ins-bars"></div>
+    <div class="section-head"><span class="section-title">Top merchants</span></div>
+    <div class="card" id="ins-merchants"></div>
+  </div>
+
+  <div class="page" id="page-settings">
+    <div class="page-title">Settings</div>
+    <div class="section-head"><span class="section-title">Budget</span></div>
+    <div class="card">
+      <div class="settings-row"><span class="settings-label">Monthly budget</span><input class="settings-input" type="number" id="set-budget" onchange="saveBudget(this.value)"></div>
+    </div>
+    <div class="section-head"><span class="section-title">Change passwords</span></div>
+    <div class="card" style="padding:14px">
+      <div style="margin-bottom:10px"><label class="field-label" style="margin-bottom:6px">Your new password</label><input class="field-input" type="password" id="new-pwd-you" placeholder="Leave blank to keep current"></div>
+      <div style="margin-bottom:10px"><label class="field-label" style="margin-bottom:6px">Wife new password</label><input class="field-input" type="password" id="new-pwd-wife" placeholder="Leave blank to keep current"></div>
+      <button class="btn btn-primary" type="button" onclick="changePasswords()">Save passwords</button>
+    </div>
+    <div class="section-head"><span class="section-title">Receipt scanning</span></div>
+    <div class="card" style="padding:14px">
+      <div class="page-sub" style="margin-bottom:10px">Get free key at console.anthropic.com</div>
+      <input class="field-input" type="password" id="set-api-key" placeholder="sk-ant-...">
+      <button class="btn btn-primary" type="button" style="margin-top:8px" onclick="saveApiKeySettings()">Save key</button>
+      <button class="btn btn-outline" type="button" onclick="clearApiKey()">Remove key</button>
+    </div>
+    <div class="section-head"><span class="section-title">Category limits</span></div>
+    <div class="card" id="settings-cat-limits"></div>
+    <div class="section-head"><span class="section-title">Add custom merchant</span></div>
+    <div class="card" style="padding:14px">
+      <div style="margin-bottom:10px"><label class="field-label" style="margin-bottom:6px">Name</label><input class="field-input" type="text" id="cust-name" placeholder="e.g. Local Bakery"></div>
+      <div style="margin-bottom:10px"><label class="field-label" style="margin-bottom:6px">Icon (emoji)</label><input class="field-input" type="text" id="cust-icon" placeholder="e.g. bakery emoji" maxlength="2"></div>
+      <div style="margin-bottom:10px"><label class="field-label" style="margin-bottom:6px">Category</label>
+        <select class="field-select" id="cust-cat">
+          <option value="food">Eating out</option><option value="grocery">Groceries</option>
+          <option value="transport">Transport</option><option value="shopping">Shopping</option>
+          <option value="health">Health</option><option value="subscriptions">Subscriptions</option>
+          <option value="housing">Housing</option><option value="other">Other</option>
+        </select>
       </div>
-      <input class="field-input" type="date" id="add-date-picker" style="display:none">
+      <button class="btn btn-primary" type="button" onclick="addMerchant()">Add merchant</button>
     </div>
-    <div class="field">
-      <div class="field-label">Paid via</div>
-      <div class="source-chips">
-        <div class="source-chip selected" id="src-card" onclick="selectSource('card')">Bank card</div>
-        <div class="source-chip" id="src-app" onclick="selectSource('app')">Another app</div>
-        <div class="source-chip" id="src-cash" onclick="selectSource('cash')">Cash</div>
-      </div>
+    <div class="section-head"><span class="section-title">Data</span></div>
+    <div class="card">
+      <div class="settings-row" onclick="exportData()" style="cursor:pointer"><span class="settings-label">Export all data</span><span>&#x1F4E4;</span></div>
+      <div class="settings-row" onclick="doLogout()" style="cursor:pointer"><span class="settings-label">Sign out</span><span>&#x1F6AA;</span></div>
     </div>
-    <div class="field">
-      <div class="field-label">Type</div>
-      <div class="source-chips">
-        <div class="source-chip selected" id="type-exp" onclick="selectType('expense')">Expense</div>
-        <div class="source-chip" id="type-inc" onclick="selectType('income')">Income</div>
-      </div>
-    </div>
-    <div class="field">
-      <div class="field-label">Note (optional)</div>
-      <input class="field-input" type="text" id="add-note" placeholder="e.g. Morning coffee">
-    </div>
-    <button class="btn btn-primary" onclick="saveExpense()">Save expense</button>
-    <button class="btn btn-outline" onclick="showPage('dashboard')">Cancel</button>
+    <div style="height:20px"></div>
+  </div>
+
+  <div class="nav">
+    <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')"><span class="nav-icon">&#x1F3E0;</span><span class="nav-label">Home</span></div>
+    <div class="nav-item" id="nav-add" onclick="showPage('add')"><span class="nav-icon">&#x2795;</span><span class="nav-label">Add</span></div>
+    <div class="nav-item" id="nav-categories" onclick="showPage('categories')"><span class="nav-icon">&#x1F3F7;</span><span class="nav-label">Budgets</span></div>
+    <div class="nav-item" id="nav-bank" onclick="showPage('bank')"><span class="nav-icon">&#x1F4C4;</span><span class="nav-label">Statements</span></div>
+    <div class="nav-item" id="nav-insights" onclick="showPage('insights')"><span class="nav-icon">&#x1F4CA;</span><span class="nav-label">Insights</span></div>
   </div>
 </div>
 
-<!-- CATEGORIES PAGE -->
-<div class="page" id="page-categories">
-  <div class="page-title">Category budgets</div>
-  <div class="page-sub" id="cat-month-label" style="margin-bottom:16px"></div>
-  <div class="card" id="cat-budget-list"></div>
-</div>
-
-<!-- BANK PAGE -->
-<div class="page" id="page-bank">
-  <div class="page-title">Bank statement</div>
-  <div class="page-sub" style="margin-bottom:16px">Read entirely on your device — never uploaded anywhere</div>
-  <div class="privacy-note">🔒 Your bank statement never leaves your device. All processing happens in your browser.</div>
-  <label for="pdf-input">
-    <div class="upload-area">
-      <div class="upload-icon">📄</div>
-      <div class="upload-label">Upload bank statement</div>
-      <div class="upload-sub">CSV file · processed locally on your device</div>
-    </div>
-  </label>
-  <input type="file" id="pdf-input" accept=".csv,.txt" onchange="handleBankUpload(this)">
-  <div id="bank-results" style="display:none">
-    <div class="section-head">
-      <span class="section-title">Detected transactions</span>
-      <span class="section-action" id="bank-match-summary"></span>
-    </div>
-    <div class="card" id="bank-tx-list"></div>
-    <button class="btn btn-primary" id="import-btn" onclick="importMatched()" style="margin-top:4px">Import all matched transactions</button>
-  </div>
-</div>
-
-<!-- INSIGHTS PAGE -->
-<div class="page" id="page-insights">
-  <div class="page-title">Insights</div>
-  <div class="page-sub" style="margin-bottom:16px" id="insights-month"></div>
-  <div class="sum-grid">
-    <div class="sum-card"><div class="sum-label">Total spent</div><div class="sum-val red" id="ins-spent">$0</div></div>
-    <div class="sum-card"><div class="sum-label">Remaining</div><div class="sum-val green" id="ins-left">$0</div></div>
-  </div>
-  <div class="section-head"><span class="section-title">Spending by category</span></div>
-  <div class="card" style="padding:16px" id="ins-bars"></div>
-  <div class="section-head"><span class="section-title">Top merchants this month</span></div>
-  <div class="card" id="ins-merchants"></div>
-</div>
-
-<!-- SETTINGS PAGE -->
-<div class="page" id="page-settings">
-  <div class="page-title">Settings</div>
-  <div class="page-sub" style="margin-bottom:16px">Your data never leaves this device</div>
-  <div class="section-head"><span class="section-title">Budget</span></div>
-  <div class="card">
-    <div class="settings-row">
-      <span class="settings-label">Monthly budget</span>
-      <input class="settings-input" type="number" id="set-budget" placeholder="3000" onchange="saveSetting('budget',this.value)">
-    </div>
-    <div class="settings-row">
-      <span class="settings-label">Currency symbol</span>
-      <select class="settings-input" id="set-currency" style="width:80px" onchange="saveSetting('currency',this.value)">
-        <option value="$">$ CAD</option>
-        <option value="$">$ USD</option>
-        <option value="£">£ GBP</option>
-        <option value="€">€ EUR</option>
-      </select>
-    </div>
-  </div>
-  <div class="section-head"><span class="section-title">Receipt scanning</span></div>
-  <div class="card" style="padding:14px">
-    <div class="field-label" style="margin-bottom:8px">Anthropic API key (for receipt scanning)</div>
-    <div class="page-sub" style="margin-bottom:10px">Get a free key at console.anthropic.com → API Keys. Stored only on your device.</div>
-    <input class="field-input" type="password" id="set-api-key" placeholder="sk-ant-...">
-    <button class="btn btn-primary" style="margin-top:8px" onclick="saveApiKeyFromSettings()">Save API key</button>
-    <button class="btn btn-outline" style="margin-top:6px" onclick="clearApiKey()">Remove API key</button>
-  </div>
-  <div class="section-head"><span class="section-title">Category limits</span></div>
-  <div class="card" id="settings-cat-limits"></div>
-  <div class="section-head"><span class="section-title">Add custom merchant</span></div>
-  <div class="card" style="padding:14px">
-    <div class="field"><div class="field-label">Merchant name</div><input class="field-input" type="text" id="cust-merchant-name" placeholder="e.g. Local Bakery"></div>
-    <div class="field"><div class="field-label">Icon (emoji)</div><input class="field-input" type="text" id="cust-merchant-icon" placeholder="🏪" maxlength="2"></div>
-    <div class="field"><div class="field-label">Category</div>
-      <select class="field-select" id="cust-merchant-cat">
-        <option value="food">Eating out</option>
-        <option value="grocery">Groceries</option>
-        <option value="transport">Transport</option>
-        <option value="shopping">Shopping</option>
-        <option value="health">Health</option>
-        <option value="subscriptions">Subscriptions</option>
-        <option value="housing">Housing</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    <button class="btn btn-primary" onclick="addCustomMerchant()">Add merchant</button>
-  </div>
-  <div class="section-head"><span class="section-title">Data</span></div>
-  <div class="card">
-    <div class="settings-row" onclick="exportData()" style="cursor:pointer"><span class="settings-label">Export all data (JSON)</span><span style="font-size:16px">📤</span></div>
-    <div class="settings-row" onclick="confirmClear()" style="cursor:pointer"><span class="settings-label" style="color:var(--red)">Clear all data</span><span style="font-size:16px">🗑️</span></div>
-  </div>
-  <div style="height:20px"></div>
-</div>
-
-<!-- NAV -->
-<div class="nav">
-  <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')"><span class="nav-icon">🏠</span><span class="nav-label">Home</span></div>
-  <div class="nav-item" id="nav-add" onclick="showPage('add')"><span class="nav-icon">➕</span><span class="nav-label">Add</span></div>
-  <div class="nav-item" id="nav-categories" onclick="showPage('categories')"><span class="nav-icon">🏷️</span><span class="nav-label">Budgets</span></div>
-  <div class="nav-item" id="nav-bank" onclick="showPage('bank')"><span class="nav-icon">📄</span><span class="nav-label">Bank</span></div>
-  <div class="nav-item" id="nav-insights" onclick="showPage('insights')"><span class="nav-icon">📊</span><span class="nav-label">Insights</span></div>
-</div>
-
-<!-- Merchant Modal -->
 <div class="modal-overlay" id="merchant-modal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title">Choose merchant</div>
-    <div class="search-wrap">
-      <span class="search-icon">🔍</span>
-      <input class="search-input" type="text" id="merchant-search" placeholder="Search..." oninput="filterMerchants(this.value)">
-    </div>
+    <div class="search-wrap"><span class="search-icon">&#x1F50D;</span><input class="search-input" type="text" id="merchant-search" placeholder="Search..."></div>
     <div class="merchant-list" id="merchant-list"></div>
-    <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
-      <button class="btn btn-outline" onclick="closeMerchantModal()">Cancel</button>
-    </div>
+    <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px"><button class="btn btn-outline" type="button" onclick="closeMerchantModal()">Cancel</button></div>
   </div>
 </div>
 
-<!-- Cat Limit Modal -->
 <div class="modal-overlay" id="cat-limit-modal">
   <div class="modal">
     <div class="modal-handle"></div>
     <div class="modal-title" id="clm-title">Set limit</div>
     <div style="text-align:center;font-size:28px;font-weight:600;font-family:var(--mono);margin:10px 0" id="clm-val">$300</div>
-    <input type="range" id="clm-slider" min="0" max="2000" step="10" value="300" oninput="updateCatLimit(this.value)">
+    <input type="range" id="clm-slider" min="0" max="2000" step="10" value="300">
     <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px;margin-bottom:16px"><span>$0</span><span>$2,000</span></div>
-    <button class="btn btn-primary" onclick="saveCatLimit()">Save limit</button>
-    <button class="btn btn-outline" onclick="closeCatLimitModal()">Cancel</button>
+    <button class="btn btn-primary" type="button" onclick="saveCatLimit()">Save limit</button>
+    <button class="btn btn-outline" type="button" onclick="closeCatLimitModal()">Cancel</button>
   </div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-// ── CATS & MERCHANTS ──────────────────────────────────
-const CATS={
-  food:{label:'Eating out',icon:'🍔',color:'#fbbf24',badge:'food-badge'},
-  grocery:{label:'Groceries',icon:'🛒',color:'#34d399',badge:'grocery-badge'},
-  transport:{label:'Transport',icon:'🚗',color:'#60a5fa',badge:'transport-badge'},
-  housing:{label:'Housing',icon:'🏠',color:'#a78bfa',badge:'housing-badge'},
-  subscriptions:{label:'Subscriptions',icon:'📱',color:'#ec4899',badge:'subs-badge'},
-  health:{label:'Health',icon:'💊',color:'#f87171',badge:'health-badge'},
-  shopping:{label:'Shopping',icon:'👕',color:'#818cf8',badge:'housing-badge'},
-  entertainment:{label:'Entertainment',icon:'🎉',color:'#f472b6',badge:'subs-badge'},
-  income:{label:'Income',icon:'💰',color:'#34d399',badge:'income-badge'},
-  other:{label:'Other',icon:'💡',color:'#9090a8',badge:'other-badge'},
-};
+// API endpoint — your Cloudflare Worker
+const API = 'https://tjmalithi.ca';
 
-const PRELOADED_MERCHANTS=[
+const CATS = {
+  food:{label:'Eating out',icon:'[F]',color:'#fbbf24',badge:'food-badge'},
+  grocery:{label:'Groceries',icon:'[G]',color:'#34d399',badge:'grocery-badge'},
+  transport:{label:'Transport',icon:'[T]',color:'#60a5fa',badge:'transport-badge'},
+  housing:{label:'Housing',icon:'[H]',color:'#a78bfa',badge:'housing-badge'},
+  subscriptions:{label:'Subscriptions',icon:'[S]',color:'#ec4899',badge:'subs-badge'},
+  health:{label:'Health',icon:'[M]',color:'#f87171',badge:'health-badge'},
+  shopping:{label:'Shopping',icon:'[SH]',color:'#818cf8',badge:'housing-badge'},
+  entertainment:{label:'Entertainment',icon:'[E]',color:'#f472b6',badge:'subs-badge'},
+  income:{label:'Income',icon:'[I]',color:'#34d399',badge:'income-badge'},
+  other:{label:'Other',icon:'[O]',color:'#9090a8',badge:'other-badge'},
+};
+// Use emoji icons
+const CAT_ICONS = {food:'🍔',grocery:'🛒',transport:'🚗',housing:'🏠',subscriptions:'📱',health:'💊',shopping:'👕',entertainment:'🎉',income:'💰',other:'💡'};
+
+const PRELOADED = [
   {name:'Tim Hortons',icon:'☕',cat:'food'},{name:"McDonald's",icon:'🍔',cat:'food'},
   {name:'Subway',icon:'🥖',cat:'food'},{name:'Starbucks',icon:'☕',cat:'food'},
   {name:"Harvey's",icon:'🍔',cat:'food'},{name:'Swiss Chalet',icon:'🍗',cat:'food'},
@@ -541,283 +497,348 @@ const PRELOADED_MERCHANTS=[
   {name:'TTC',icon:'🚌',cat:'transport'},{name:'Presto',icon:'🚌',cat:'transport'},
   {name:'GO Transit',icon:'🚆',cat:'transport'},
   {name:'Amazon',icon:'📦',cat:'shopping'},{name:'Canadian Tire',icon:'🔧',cat:'shopping'},
-  {name:'Best Buy',icon:'📺',cat:'shopping'},{name:'H&M',icon:'👕',cat:'shopping'},
-  {name:'Winners',icon:'👜',cat:'shopping'},{name:'Sport Chek',icon:'👟',cat:'shopping'},
+  {name:'Best Buy',icon:'📺',cat:'shopping'},{name:'Winners',icon:'👜',cat:'shopping'},
   {name:'Shoppers Drug Mart',icon:'💊',cat:'health'},{name:'Rexall',icon:'💊',cat:'health'},
   {name:'Netflix',icon:'📺',cat:'subscriptions'},{name:'Spotify',icon:'🎵',cat:'subscriptions'},
   {name:'Apple',icon:'🍎',cat:'subscriptions'},{name:'Rogers',icon:'📡',cat:'subscriptions'},
   {name:'Bell',icon:'📡',cat:'subscriptions'},{name:'Telus',icon:'📡',cat:'subscriptions'},
   {name:'Amazon Prime',icon:'📦',cat:'subscriptions'},{name:'Disney+',icon:'🎬',cat:'subscriptions'},
-  {name:'Employer / Salary',icon:'💼',cat:'income'},{name:'Freelance Income',icon:'💻',cat:'income'},
-  {name:'Other Income',icon:'💰',cat:'income'},
+  {name:'Hydro',icon:'⚡',cat:'housing'},{name:'Enbridge Gas',icon:'🔥',cat:'housing'},
+  {name:'Rent',icon:'🏠',cat:'housing'},{name:'CIBC',icon:'🏦',cat:'other'},
+  {name:'Salary / Payroll',icon:'💼',cat:'income'},{name:'Other Income',icon:'💰',cat:'income'},
 ];
 
-const BANK_PATTERNS=[
-  {pattern:/TIM\s*HOR|TIMS/i,merchant:'Tim Hortons',icon:'☕',cat:'food'},
-  {pattern:/MCDONALD|MCG|MCDS/i,merchant:"McDonald's",icon:'🍔',cat:'food'},
-  {pattern:/STARBUCKS|SBUX/i,merchant:'Starbucks',icon:'☕',cat:'food'},
-  {pattern:/SUBWAY/i,merchant:'Subway',icon:'🥖',cat:'food'},
-  {pattern:/SKIP\s*THE|SKIPTHED/i,merchant:'Skip the Dishes',icon:'🛵',cat:'food'},
-  {pattern:/UBER\s*EAT/i,merchant:'Uber Eats',icon:'🛵',cat:'food'},
-  {pattern:/DOORDASH/i,merchant:'DoorDash',icon:'🛵',cat:'food'},
-  {pattern:/WALMART|WAL-MART/i,merchant:'Walmart',icon:'🛒',cat:'grocery'},
-  {pattern:/LOBLAWS/i,merchant:'Loblaws',icon:'🛒',cat:'grocery'},
-  {pattern:/NO\s*FRILLS/i,merchant:'No Frills',icon:'🛒',cat:'grocery'},
-  {pattern:/COSTCO/i,merchant:'Costco',icon:'🛒',cat:'grocery'},
-  {pattern:/FRESHCO/i,merchant:'FreshCo',icon:'🛒',cat:'grocery'},
-  {pattern:/PETRO.CAN|PETRO-CAN/i,merchant:'Petro-Canada',icon:'⛽',cat:'transport'},
-  {pattern:/ESSO/i,merchant:'Esso',icon:'⛽',cat:'transport'},
-  {pattern:/SHELL/i,merchant:'Shell',icon:'⛽',cat:'transport'},
-  {pattern:/UBER(?!\s*EAT)/i,merchant:'Uber',icon:'🚗',cat:'transport'},
-  {pattern:/PRESTO/i,merchant:'Presto',icon:'🚌',cat:'transport'},
-  {pattern:/TTC|TORONTO\s*TRANSIT/i,merchant:'TTC',icon:'🚌',cat:'transport'},
-  {pattern:/AMAZON(?!\s*PRIME)/i,merchant:'Amazon',icon:'📦',cat:'shopping'},
-  {pattern:/CDN\s*TIRE|CANADIAN\s*TIRE/i,merchant:'Canadian Tire',icon:'🔧',cat:'shopping'},
-  {pattern:/BEST\s*BUY/i,merchant:'Best Buy',icon:'📺',cat:'shopping'},
-  {pattern:/SHOPPERS|SDM/i,merchant:'Shoppers Drug Mart',icon:'💊',cat:'health'},
-  {pattern:/REXALL/i,merchant:'Rexall',icon:'💊',cat:'health'},
-  {pattern:/NETFLIX/i,merchant:'Netflix',icon:'📺',cat:'subscriptions'},
-  {pattern:/SPOTIFY/i,merchant:'Spotify',icon:'🎵',cat:'subscriptions'},
-  {pattern:/APPLE\.COM|APPLE INC|ITUNES/i,merchant:'Apple',icon:'🍎',cat:'subscriptions'},
-  {pattern:/AMAZON\s*PRIME/i,merchant:'Amazon Prime',icon:'📦',cat:'subscriptions'},
-  {pattern:/ROGERS/i,merchant:'Rogers',icon:'📡',cat:'subscriptions'},
-  {pattern:/BELL\s*(CANADA|MOB)?/i,merchant:'Bell',icon:'📡',cat:'subscriptions'},
-  {pattern:/TELUS/i,merchant:'Telus',icon:'📡',cat:'subscriptions'},
-  {pattern:/DISNEY\+|DISNEY PLUS/i,merchant:'Disney+',icon:'🎬',cat:'subscriptions'},
-];
+let token = localStorage.getItem('mf_token') || '';
+let currentUser = localStorage.getItem('mf_user') || '';
+let selectedLoginUser = 'you';
+let appSettings = {budget:3000,currency:'$',categoryLimits:{},customMerchants:[]};
+let transactions = [];
+let parsedStmtTxs = [];
+let selectedStmtType = 'bank';
+let selectedCat='food', selectedDate='today', selectedSrc='card', selectedType='expense';
+let selectedMerchantObj=null, scanCat='food', scanSrc='card', editingCat=null;
 
-// ── STATE ─────────────────────────────────────────────
-let state={budget:3000,currency:'$',transactions:[],catLimits:{food:300,grocery:500,transport:300,housing:800,subscriptions:100,health:150,shopping:200,entertainment:100,other:100},customMerchants:[]};
-function loadState(){try{const s=localStorage.getItem('myfinance_v2');if(s)Object.assign(state,JSON.parse(s));}catch(e){}}
-function saveState(){try{localStorage.setItem('myfinance_v2',JSON.stringify(state));}catch(e){}}
-loadState();
+const fmt = n => (appSettings.currency||'$') + Math.abs(n).toFixed(2);
+const today = () => new Date().toISOString().slice(0,10);
+const yesterday = () => { const d=new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); };
+const fmtDate = iso => { if(iso===today()) return 'Today'; if(iso===yesterday()) return 'Yesterday'; return new Date(iso+'T12:00:00').toLocaleDateString('en-CA',{month:'short',day:'numeric'}); };
+const thisMonth = () => { const n=new Date(); return transactions.filter(t=>{const d=new Date(t.date+'T12:00:00'); return d.getMonth()===n.getMonth()&&d.getFullYear()===n.getFullYear();}); };
+const todayTxs = () => transactions.filter(t => t.date===today());
+const catLabel = c => CATS[c]?.label||'Other';
+const catIcon = c => CAT_ICONS[c]||'💡';
+const catColor = c => CATS[c]?.color||'#9090a8';
+const catBadge = c => CATS[c]?.badge||'other-badge';
+const allMerchants = () => [...PRELOADED,...(appSettings.customMerchants||[])];
+const getApiKey = () => localStorage.getItem('mf_apikey')||'';
 
-function getApiKey(){return localStorage.getItem('mf_apikey')||'';}
-function saveApiKey(){
-  const k=document.getElementById('api-key-input').value.trim();
-  if(!k){showToast('Please enter your API key');return;}
-  localStorage.setItem('mf_apikey',k);
-  document.getElementById('api-key-setup').style.display='none';
-  showToast('✓ API key saved!');
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
 }
-function saveApiKeyFromSettings(){
-  const k=document.getElementById('set-api-key').value.trim();
-  if(!k){showToast('Please enter your API key');return;}
-  localStorage.setItem('mf_apikey',k);
-  showToast('✓ API key saved!');
-}
-function clearApiKey(){localStorage.removeItem('mf_apikey');document.getElementById('set-api-key').value='';showToast('API key removed');}
 
-// ── HELPERS ───────────────────────────────────────────
-function fmt(n){return state.currency+Math.abs(n).toFixed(2);}
-function today(){return new Date().toISOString().slice(0,10);}
-function yesterday(){const d=new Date();d.setDate(d.getDate()-1);return d.toISOString().slice(0,10);}
-function fmtDate(iso){if(iso===today())return 'Today';if(iso===yesterday())return 'Yesterday';const d=new Date(iso+'T12:00:00');return d.toLocaleDateString('en-CA',{month:'short',day:'numeric'});}
-function thisMonthTx(){const now=new Date();return state.transactions.filter(t=>{const d=new Date(t.date+'T12:00:00');return d.getMonth()===now.getMonth()&&d.getFullYear()===now.getFullYear();});}
-function todayTx(){return state.transactions.filter(t=>t.date===today());}
-function catLabel(c){return CATS[c]?.label||'Other';}
-function catIcon(c){return CATS[c]?.icon||'💡';}
-function catColor(c){return CATS[c]?.color||'#9090a8';}
-function catBadge(c){return CATS[c]?.badge||'other-badge';}
-function allMerchants(){return[...PRELOADED_MERCHANTS,...state.customMerchants];}
-function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500);}
+async function apiCall(path, method='GET', body=null) {
+  const opts = {method, headers:{'Content-Type':'application/json','Authorization':'Bearer '+token}};
+  if (body) opts.body = JSON.stringify(body);
+  try {
+    const res = await fetch(API+path, opts);
+    if (res.status===401) { doLogout(); return null; }
+    return await res.json();
+  } catch(e) { showToast('Network error'); return null; }
+}
+
+// ── AUTH ──────────────────────────────────────────────
+function switchUser(u) {
+  selectedLoginUser = u;
+  document.getElementById('ubtn-you').classList.toggle('active', u==='you');
+  document.getElementById('ubtn-wife').classList.toggle('active', u==='wife');
+  document.getElementById('login-error').style.display = 'none';
+  document.getElementById('login-password').value = '';
+  document.getElementById('login-password').focus();
+}
+
+document.getElementById('login-btn').addEventListener('click', doLogin);
+document.getElementById('login-password').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
+document.getElementById('merchant-search').addEventListener('input', function() {
+  filterMerchants(this.value);
+});
+document.getElementById('add-merchant-display').addEventListener('click', openMerchantModal);
+document.getElementById('receipt-input').addEventListener('change', function() {
+  handleReceiptPhoto(this);
+});
+document.getElementById('pdf-input').addEventListener('change', function() {
+  handleFileUpload(this);
+});
+document.getElementById('clm-slider').addEventListener('input', function() {
+  document.getElementById('clm-val').textContent = (appSettings.currency||'$') + parseInt(this.value);
+});
+
+async function doLogin() {
+  const pwd = document.getElementById('login-password').value.trim();
+  if (!pwd) { showToast('Enter your password'); return; }
+  const btn = document.getElementById('login-btn');
+  btn.textContent = 'Signing in...';
+  document.getElementById('login-error').style.display = 'none';
+  try {
+    const res = await fetch(API + '/api/login', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({userId: selectedLoginUser, password: pwd})
+    });
+    const data = await res.json();
+    if (res.ok && data.token) {
+      token = data.token;
+      currentUser = data.userId;
+      localStorage.setItem('mf_token', token);
+      localStorage.setItem('mf_user', currentUser);
+      document.getElementById('login-page').style.display = 'none';
+      document.getElementById('app').style.display = 'block';
+      document.getElementById('header-greeting').textContent = currentUser==='you' ? 'Good day, Thejith 👋' : 'Good day 👋';
+      document.getElementById('api-key-setup').style.display = getApiKey() ? 'none' : 'block';
+      await loadSettings();
+      await loadTransactions();
+      renderDashboard();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      showToast('Wrong password — try family2024');
+    }
+  } catch(e) {
+    showToast('Connection error: ' + e.message);
+  }
+  btn.textContent = 'Sign in';
+}
+
+function doLogout() {
+  token=''; currentUser='';
+  localStorage.removeItem('mf_token'); localStorage.removeItem('mf_user');
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-page').style.display='flex';
+  document.getElementById('login-password').value='';
+}
+
+// Auto-login
+if (token) {
+  (async () => {
+    try {
+      await loadSettings();
+      await loadTransactions();
+      document.getElementById('login-page').style.display='none';
+      document.getElementById('app').style.display='block';
+      document.getElementById('header-greeting').textContent = currentUser==='you'?'Good day, Thejith 👋':'Good day 👋';
+      document.getElementById('api-key-setup').style.display = getApiKey()?'none':'block';
+      renderDashboard();
+    } catch(e) { doLogout(); }
+  })();
+}
+
+// ── DATA ──────────────────────────────────────────────
+async function loadSettings() {
+  const data = await apiCall('/api/settings');
+  if (data) {
+    appSettings.budget = parseFloat(data.budget)||3000;
+    appSettings.currency = data.currency||'$';
+    appSettings.categoryLimits = data.categoryLimits||{};
+    appSettings.customMerchants = data.customMerchants||[];
+  }
+}
+
+async function loadTransactions() {
+  const now = new Date();
+  const month = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  const data = await apiCall('/api/transactions?month='+month);
+  if (data) transactions = data;
+}
 
 // ── NAV ───────────────────────────────────────────────
-function showPage(p){
+function showPage(p) {
   document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
   document.getElementById('page-'+p).classList.add('active');
-  const nav=document.getElementById('nav-'+p);if(nav)nav.classList.add('active');
-  if(p==='dashboard')renderDashboard();
-  if(p==='categories')renderCategories();
-  if(p==='insights')renderInsights();
-  if(p==='settings')renderSettings();
-  if(p==='add')initAddPage();
+  const nav=document.getElementById('nav-'+p); if(nav) nav.classList.add('active');
+  if(p==='dashboard') renderDashboard();
+  if(p==='categories') renderCategories();
+  if(p==='insights') renderInsights();
+  if(p==='settings') renderSettings();
+  if(p==='add') initAdd();
   window.scrollTo(0,0);
 }
 
 // ── DASHBOARD ─────────────────────────────────────────
-function renderDashboard(){
-  const mx=thisMonthTx();
-  const spent=mx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-  const income=mx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
-  const left=state.budget-spent;
-  const pct=Math.min(100,Math.round(spent/state.budget*100))||0;
-  const circ=239;
-  document.getElementById('ring-progress').style.strokeDashoffset=circ-(circ*pct/100);
-  document.getElementById('ring-progress').style.stroke=pct>80?'#f87171':pct>60?'#fbbf24':'#6c63ff';
-  document.getElementById('ring-pct').textContent=pct+'%';
-  document.getElementById('bi-budget').textContent=fmt(state.budget);
-  document.getElementById('bi-spent').textContent=fmt(spent);
-  document.getElementById('bi-left').textContent=fmt(left);
-  document.getElementById('bi-left').className='budget-item-val '+(left<0?'red':'green');
-  document.getElementById('mini-bar-fill').style.width=pct+'%';
-  document.getElementById('mini-bar-fill').style.background=pct>80?'#f87171':pct>60?'#fbbf24':'#6c63ff';
-  document.getElementById('sum-income').textContent=fmt(income);
-  document.getElementById('sum-expenses').textContent=fmt(spent);
-  renderTxList('today-list',todayTx().slice(0,5),'No expenses today yet');
-  renderTxList('recent-list',[...state.transactions].reverse().slice(0,8),'No transactions yet');
-  const now=new Date();
-  document.getElementById('header-date').textContent=now.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'});
-}
-function renderTxList(id,txs,emptyMsg){
-  const el=document.getElementById(id);
-  if(!txs.length){el.innerHTML=`<div class="empty"><div class="empty-icon">🧾</div>${emptyMsg}</div>`;return;}
-  el.innerHTML=txs.map(t=>`<div class="card-row"><div class="m-icon">${t.icon||catIcon(t.cat)}</div><div style="flex:1;min-width:0"><div class="exp-name">${t.merchant}</div><div class="exp-meta">${fmtDate(t.date)} · <span class="cat-pill ${catBadge(t.cat)}">${catLabel(t.cat)}</span></div></div><div class="exp-amount ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div></div>`).join('');
+function renderDashboard() {
+  const mx = thisMonth();
+  const spent = mx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const income = mx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+  const left = appSettings.budget - spent;
+  const pct = Math.min(100,Math.round(spent/appSettings.budget*100))||0;
+  const circ = 239;
+  document.getElementById('ring-progress').style.strokeDashoffset = circ-(circ*pct/100);
+  document.getElementById('ring-progress').style.stroke = pct>80?'#f87171':pct>60?'#fbbf24':'#6c63ff';
+  document.getElementById('ring-pct').textContent = pct+'%';
+  document.getElementById('bi-budget').textContent = fmt(appSettings.budget);
+  document.getElementById('bi-spent').textContent = fmt(spent);
+  document.getElementById('bi-left').textContent = fmt(left);
+  document.getElementById('bi-left').className = 'budget-item-val '+(left<0?'red':'green');
+  document.getElementById('mini-bar-fill').style.width = pct+'%';
+  document.getElementById('mini-bar-fill').style.background = pct>80?'#f87171':pct>60?'#fbbf24':'#6c63ff';
+  document.getElementById('sum-income').textContent = fmt(income);
+  document.getElementById('sum-expenses').textContent = fmt(spent);
+  document.getElementById('who-you').textContent = fmt(mx.filter(t=>t.type==='expense'&&t.who==='you').reduce((a,t)=>a+t.amount,0));
+  document.getElementById('who-wife').textContent = fmt(mx.filter(t=>t.type==='expense'&&t.who==='wife').reduce((a,t)=>a+t.amount,0));
+  renderTxList('today-list', todayTxs().slice(0,5), 'No expenses today');
+  renderTxList('recent-list', [...transactions].reverse().slice(0,10), 'No transactions yet');
+  document.getElementById('header-date').textContent = new Date().toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'});
 }
 
-// ── ADD PAGE ──────────────────────────────────────────
-let selectedCat='food',selectedDate='today',selectedSource='card',selectedType='expense',selectedMerchantObj=null;
-let scanCat='food',scanSource='card';
+function whoBadge(w) {
+  return w==='you'?'<span class="who-badge who-you">Thejith</span>':'<span class="who-badge who-wife">Wife</span>';
+}
 
-function initAddPage(){
-  selectedCat='food';selectedDate='today';selectedSource='card';selectedType='expense';selectedMerchantObj=null;
+function renderTxList(id, txs, emptyMsg) {
+  const el = document.getElementById(id);
+  if (!txs.length) { el.innerHTML='<div class="empty"><div class="empty-icon">🧾</div>'+emptyMsg+'</div>'; return; }
+  el.innerHTML = txs.map(t =>
+    '<div class="card-row">'+
+    '<div class="m-icon">'+(t.icon||catIcon(t.category))+'</div>'+
+    '<div style="flex:1;min-width:0">'+
+    '<div class="exp-name">'+t.merchant+whoBadge(t.who)+'</div>'+
+    '<div class="exp-meta">'+fmtDate(t.date)+' · <span class="cat-pill '+catBadge(t.category)+'">'+catLabel(t.category)+'</span></div>'+
+    '</div>'+
+    '<div class="exp-amount '+(t.type==='income'?'pos':'neg')+'">'+(t.type==='income'?'+':'-')+fmt(t.amount)+'</div>'+
+    '</div>'
+  ).join('');
+}
+
+// ── ADD ───────────────────────────────────────────────
+function initAdd() {
+  selectedCat='food'; selectedDate='today'; selectedSrc='card'; selectedType='expense'; selectedMerchantObj=null;
   document.getElementById('add-amount').value='';
   document.getElementById('add-merchant-display').value='';
   document.getElementById('add-note').value='';
   document.getElementById('add-date-picker').style.display='none';
-  ['dc-today','dc-yesterday','dc-pick'].forEach(id=>document.getElementById(id).classList.remove('selected'));
-  document.getElementById('dc-today').classList.add('selected');
-  ['src-card','src-app','src-cash'].forEach(id=>document.getElementById(id).classList.remove('selected'));
-  document.getElementById('src-card').classList.add('selected');
-  ['type-exp','type-inc'].forEach(id=>document.getElementById(id).classList.remove('selected'));
-  document.getElementById('type-exp').classList.add('selected');
-  renderCatChips();
-  // Check API key for scan tab
-  if(!getApiKey()){document.getElementById('api-key-setup').style.display='block';}
-  else{document.getElementById('api-key-setup').style.display='none';}
-  resetScan();
+  ['dc-today','dc-yesterday','dc-pick'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='dc-today'));
+  ['src-card','src-app','src-cash'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='src-card'));
+  ['type-exp','type-inc'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='type-exp'));
+  renderCatChips(); resetScan();
+  document.getElementById('api-key-setup').style.display=getApiKey()?'none':'block';
 }
 
-function switchAddTab(t){
+function switchAddTab(t) {
   document.querySelectorAll('.scan-tab').forEach(el=>el.classList.remove('active'));
   document.querySelectorAll('.scan-panel').forEach(el=>el.classList.remove('active'));
   document.getElementById('tab-'+t).classList.add('active');
   document.getElementById(t+'-panel').classList.add('active');
 }
 
-function renderCatChips(){
-  document.getElementById('add-cat-chips').innerHTML=Object.entries(CATS).map(([k,v])=>`<div class="chip ${k===selectedCat?'selected':''}" onclick="pickCat('${k}')">${v.icon} ${v.label}</div>`).join('');
+function renderCatChips() {
+  document.getElementById('add-cat-chips').innerHTML = Object.entries(CATS).map(([k,v])=>
+    '<div class="chip '+(k===selectedCat?'selected':'')+'" onclick="pickCat(\''+k+'\')">'+catIcon(k)+' '+v.label+'</div>'
+  ).join('');
 }
-function renderScanCatChips(){
-  document.getElementById('scan-cat-chips').innerHTML=Object.entries(CATS).map(([k,v])=>`<div class="chip ${k===scanCat?'selected':''}" onclick="pickScanCat('${k}')">${v.icon} ${v.label}</div>`).join('');
+function renderScanCatChips() {
+  document.getElementById('scan-cat-chips').innerHTML = Object.entries(CATS).map(([k,v])=>
+    '<div class="chip '+(k===scanCat?'selected':'')+'" onclick="pickScanCat(\''+k+'\')">'+catIcon(k)+' '+v.label+'</div>'
+  ).join('');
 }
 function pickCat(k){selectedCat=k;renderCatChips();}
 function pickScanCat(k){scanCat=k;renderScanCatChips();}
-function selectDate(d){selectedDate=d;['dc-today','dc-yesterday','dc-pick'].forEach(id=>document.getElementById(id).classList.remove('selected'));document.getElementById('dc-'+d).classList.add('selected');document.getElementById('add-date-picker').style.display=d==='pick'?'block':'none';}
-function selectSource(s){selectedSource=s;['src-card','src-app','src-cash'].forEach(id=>document.getElementById(id).classList.remove('selected'));document.getElementById('src-'+s).classList.add('selected');}
-function selectScanSource(s){scanSource=s;['ssrc-card','ssrc-app','ssrc-cash'].forEach(id=>document.getElementById(id).classList.remove('selected'));document.getElementById('ssrc-'+s).classList.add('selected');}
-function selectType(t){selectedType=t;['type-exp','type-inc'].forEach(id=>document.getElementById(id).classList.remove('selected'));document.getElementById('type-'+(t==='expense'?'exp':'inc')).classList.add('selected');if(t==='income'){selectedCat='income';renderCatChips();}else{if(selectedCat==='income'){selectedCat='food';renderCatChips();}}}
+function selDate(d){selectedDate=d;['dc-today','dc-yesterday','dc-pick'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='dc-'+d));document.getElementById('add-date-picker').style.display=d==='pick'?'block':'none';}
+function selSrc(s){selectedSrc=s;['src-card','src-app','src-cash'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='src-'+s));}
+function selScanSrc(s){scanSrc=s;['ssrc-card','ssrc-app','ssrc-cash'].forEach(id=>document.getElementById(id)&&document.getElementById(id).classList.toggle('selected',id==='ssrc-'+s));}
+function selType(t){selectedType=t;['type-exp','type-inc'].forEach(id=>document.getElementById(id).classList.toggle('selected',id==='type-'+(t==='expense'?'exp':'inc')));if(t==='income'){selectedCat='income';renderCatChips();}else if(selectedCat==='income'){selectedCat='food';renderCatChips();}}
 
-function saveExpense(){
-  const amount=parseFloat(document.getElementById('add-amount').value);
-  const merchant=document.getElementById('add-merchant-display').value.trim()||'Unknown';
-  if(!amount||amount<=0){showToast('Please enter an amount');return;}
-  let dateVal=today();
-  if(selectedDate==='yesterday')dateVal=yesterday();
-  else if(selectedDate==='pick')dateVal=document.getElementById('add-date-picker').value||today();
-  state.transactions.push({id:Date.now(),merchant,icon:selectedMerchantObj?.icon||catIcon(selectedCat),cat:selectedCat,amount,date:dateVal,type:selectedType,source:selectedSource,note:document.getElementById('add-note').value.trim()});
-  saveState();showToast('✓ Expense saved!');showPage('dashboard');
+async function saveExpense() {
+  const amount = parseFloat(document.getElementById('add-amount').value);
+  const merchant = document.getElementById('add-merchant-display').value.trim()||'Unknown';
+  if (!amount||amount<=0) { showToast('Enter an amount'); return; }
+  let dateVal = today();
+  if (selectedDate==='yesterday') dateVal=yesterday();
+  else if (selectedDate==='pick') dateVal=document.getElementById('add-date-picker').value||today();
+  const tx = {merchant, icon:selectedMerchantObj?.icon||catIcon(selectedCat), category:selectedCat, amount, type:selectedType, source:selectedSrc, date:dateVal, note:document.getElementById('add-note').value.trim(), who:currentUser};
+  const res = await apiCall('/api/transactions','POST',tx);
+  if (res?.ok) {
+    transactions.unshift({...tx, id:Date.now().toString()});
+    showToast('Expense saved!'); showPage('dashboard');
+  }
 }
 
-// ── RECEIPT SCANNING ──────────────────────────────────
+// ── RECEIPT ───────────────────────────────────────────
+function saveApiKey(){const k=document.getElementById('api-key-input').value.trim();if(!k)return;localStorage.setItem('mf_apikey',k);document.getElementById('api-key-setup').style.display='none';showToast('Key saved!');}
+function saveApiKeySettings(){const k=document.getElementById('set-api-key').value.trim();if(!k)return;localStorage.setItem('mf_apikey',k);showToast('Key saved!');}
+function clearApiKey(){localStorage.removeItem('mf_apikey');document.getElementById('set-api-key').value='';showToast('Key removed');}
+
 function resetScan(){
   document.getElementById('receipt-preview').style.display='none';
   document.getElementById('ai-result-card').style.display='none';
-  document.getElementById('scan-confirm-area').style.display='none';
+  document.getElementById('scan-confirm').style.display='none';
   document.getElementById('scanning-overlay').classList.remove('show');
   document.getElementById('scan-ready').style.display='block';
   document.getElementById('receipt-input').value='';
-  scanCat='food'; scanSource='card';
-  ['ssrc-card','ssrc-app','ssrc-cash'].forEach(id=>document.getElementById(id).classList.remove('selected'));
-  document.getElementById('ssrc-card').classList.add('selected');
 }
 
-async function handleReceiptPhoto(input){
-  const file=input.files[0];
-  if(!file)return;
+async function handleReceiptPhoto(input) {
+  const file=input.files[0]; if(!file) return;
   const apiKey=getApiKey();
-  if(!apiKey){document.getElementById('api-key-setup').style.display='block';showToast('Please add your API key first');return;}
-
-  // Show preview
+  if(!apiKey){document.getElementById('api-key-setup').style.display='block';showToast('Add API key first');return;}
   const reader=new FileReader();
   reader.onload=async function(e){
     const dataUrl=e.target.result;
-    const img=document.getElementById('receipt-preview');
-    img.src=dataUrl;img.style.display='block';
+    document.getElementById('receipt-preview').src=dataUrl;
+    document.getElementById('receipt-preview').style.display='block';
     document.getElementById('scan-ready').style.display='none';
     document.getElementById('scanning-overlay').classList.add('show');
-
-    // Animate steps
-    const steps=['Reading receipt text...','Detecting merchant name...','Extracting amount & date...','Auto-selecting category...'];
-    let si=0;
-    const iv=setInterval(()=>{
-      if(si<steps.length){document.getElementById('scan-step-text').textContent=steps[si];si++;}
-    },900);
-
+    const steps=['Reading receipt...','Detecting merchant...','Extracting amount...','Setting category...'];
+    let si=0; const iv=setInterval(()=>{if(si<steps.length){document.getElementById('scan-step-text').textContent=steps[si];si++;}},900);
     try{
-      // Convert to base64
       const base64=dataUrl.split(',')[1];
-      const mediaType=file.type||'image/jpeg';
-
-      const response=await fetch('https://api.anthropic.com/v1/messages',{
+      const res=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01'},
-        body:JSON.stringify({
-          model:'claude-haiku-4-5-20251001',
-          max_tokens:400,
-          messages:[{role:'user',content:[
-            {type:'image',source:{type:'base64',media_type:mediaType,data:base64}},
-            {type:'text',text:'You are reading a receipt image. Extract and return ONLY a JSON object with these fields: merchant (store name), amount (number only, the total paid), date (YYYY-MM-DD or "today" if unclear), category (one of: food, grocery, transport, housing, subscriptions, health, shopping, entertainment, other). Return ONLY valid JSON, no other text.'}
-          ]}]
-        })
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:400,messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:file.type||'image/jpeg',data:base64}},
+          {type:'text',text:'Read this receipt. Return ONLY a JSON object with fields: merchant, amount (number), date (YYYY-MM-DD), category (food/grocery/transport/housing/subscriptions/health/shopping/entertainment/other). No markdown, no explanation, just the JSON object.'}
+        ]}]})
       });
-
       clearInterval(iv);
       document.getElementById('scanning-overlay').classList.remove('show');
-
-      if(!response.ok){throw new Error('API error '+response.status);}
-      const data=await response.json();
-      const text=data.content[0].text.trim();
-      let parsed;
-      try{parsed=JSON.parse(text.replace(/```json|```/g,'').trim());}
-      catch(e){throw new Error('Could not parse receipt');}
-
-      // Show result
+      if(!res.ok) throw new Error('API '+res.status);
+      const data=await res.json();
+      const raw=data.content[0].text;
+      const jsonStart=raw.indexOf('{');
+      const jsonEnd=raw.lastIndexOf('}');
+      const parsed=JSON.parse(jsonStart>=0?raw.slice(jsonStart,jsonEnd+1):raw);
       const merchant=parsed.merchant||'Unknown';
       const amount=parseFloat(parsed.amount)||0;
-      const dateVal=parsed.date&&parsed.date!=='today'?parsed.date:today();
+      const dateVal=parsed.date&&/\d{4}-\d{2}-\d{2}/.test(parsed.date)?parsed.date:today();
       scanCat=parsed.category||'other';
-
       document.getElementById('ai-merchant').textContent=merchant;
       document.getElementById('ai-amount').textContent=fmt(amount);
-      document.getElementById('ai-date-detected').textContent=fmtDate(dateVal);
+      document.getElementById('ai-date-det').textContent=fmtDate(dateVal);
       document.getElementById('ai-cat').textContent=catIcon(scanCat)+' '+catLabel(scanCat);
       document.getElementById('ai-result-card').style.display='block';
-
       document.getElementById('scan-merchant').value=merchant;
       document.getElementById('scan-amount').value=amount.toFixed(2);
       renderScanCatChips();
-      document.getElementById('scan-confirm-area').style.display='block';
-
+      document.getElementById('scan-confirm').style.display='block';
     }catch(err){
       clearInterval(iv);
       document.getElementById('scanning-overlay').classList.remove('show');
-      showToast('Could not read receipt. Try manual entry.');
-      console.error(err);
+      showToast('Could not read receipt — use manual entry');
       resetScan();
     }
   };
   reader.readAsDataURL(file);
 }
 
-function saveScanExpense(){
+async function saveScanExpense(){
   const amount=parseFloat(document.getElementById('scan-amount').value);
   const merchant=document.getElementById('scan-merchant').value.trim()||'Unknown';
-  if(!amount||amount<=0){showToast('Please check the amount');return;}
+  if(!amount||amount<=0){showToast('Check amount');return;}
   const m=allMerchants().find(x=>x.name.toLowerCase()===merchant.toLowerCase());
-  state.transactions.push({id:Date.now(),merchant,icon:m?.icon||catIcon(scanCat),cat:scanCat,amount,date:today(),type:'expense',source:scanSource,note:'Scanned receipt'});
-  saveState();showToast('✓ Receipt saved!');showPage('dashboard');
+  const tx={merchant,icon:m?.icon||catIcon(scanCat),category:scanCat,amount,type:'expense',source:scanSrc,date:today(),note:'Scanned receipt',who:currentUser};
+  const res=await apiCall('/api/transactions','POST',tx);
+  if(res?.ok){transactions.unshift({...tx,id:Date.now().toString()});showToast('Receipt saved!');showPage('dashboard');}
 }
 
 // ── MERCHANT MODAL ────────────────────────────────────
@@ -827,117 +848,147 @@ function filterMerchants(q){renderMerchantList(q);}
 function renderMerchantList(q){
   const list=allMerchants().filter(m=>!q||m.name.toLowerCase().includes(q.toLowerCase()));
   const el=document.getElementById('merchant-list');
-  if(!list.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">No merchants found</div>';return;}
-  el.innerHTML=list.map((m,i)=>`<div class="merchant-item" onclick="selectMerchant(${allMerchants().indexOf(m)})"><div class="m-icon" style="width:32px;height:32px;font-size:16px">${m.icon}</div><div><div class="mi-name">${m.name}</div><div class="mi-cat">${catLabel(m.cat)}</div></div><span class="mi-check">✓</span></div>`).join('');
+  if(!list.length){el.innerHTML='<div style="padding:20px;text-align:center;color:var(--text3)">No merchants found</div>';return;}
+  el.innerHTML=list.map((m,i)=>'<div class="merchant-item" onclick="selMerchant('+i+')"><div class="m-icon" style="width:32px;height:32px;font-size:16px">'+m.icon+'</div><div><div class="mi-name">'+m.name+'</div><div class="mi-cat">'+catLabel(m.cat||m.category)+'</div></div><span class="mi-check">✓</span></div>').join('');
 }
-function selectMerchant(i){
-  const m=allMerchants()[i];selectedMerchantObj=m;
+function selMerchant(i){
+  const m=allMerchants()[i]; selectedMerchantObj=m;
   document.getElementById('add-merchant-display').value=m.name;
-  selectedCat=m.cat;
-  if(m.cat==='income'){selectedType='income';document.getElementById('type-exp').classList.remove('selected');document.getElementById('type-inc').classList.add('selected');}
-  renderCatChips();closeMerchantModal();
+  selectedCat=m.cat||m.category;
+  if(selectedCat==='income'){selType('income');}else if(selectedType==='income'){selType('expense');}
+  renderCatChips(); closeMerchantModal();
 }
 
 // ── CATEGORIES ────────────────────────────────────────
 function renderCategories(){
-  const now=new Date();document.getElementById('cat-month-label').textContent=now.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
-  const mx=thisMonthTx().filter(t=>t.type==='expense');
+  document.getElementById('cat-month-label').textContent=new Date().toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  const mx=thisMonth().filter(t=>t.type==='expense');
   document.getElementById('cat-budget-list').innerHTML=Object.entries(CATS).filter(([k])=>k!=='income').map(([k,v])=>{
-    const spent=mx.filter(t=>t.cat===k).reduce((a,t)=>a+t.amount,0);
-    const limit=state.catLimits[k]||0;
+    const spent=mx.filter(t=>t.category===k).reduce((a,t)=>a+t.amount,0);
+    const limit=appSettings.categoryLimits[k]||0;
     const pct=limit?Math.min(100,Math.round(spent/limit*100)):0;
-    const left=limit-spent;
     const barColor=pct>=100?'#f87171':pct>=80?'#fbbf24':v.color;
-    return`<div class="cat-budget-row"><div class="cbr-top"><div class="m-icon" style="width:34px;height:34px;font-size:16px;background:${v.color}22">${v.icon}</div><div class="cbr-name">${v.label}</div><div class="cbr-amounts">${fmt(spent)} / ${limit?fmt(limit):'No limit'}</div></div><div class="cbr-bar"><div class="cbr-fill" style="width:${pct}%;background:${barColor}"></div></div><div class="cbr-bottom"><span class="cbr-status" style="color:${pct>=100?'#f87171':pct>=80?'#fbbf24':'var(--text3)'}">${limit?(pct>=100?fmt(spent-limit)+' over limit':fmt(left)+' remaining'):'No limit set'}</span><span class="cbr-edit" onclick="openCatLimitModal('${k}')">Edit limit</span></div></div>`;
+    return '<div class="cat-budget-row"><div class="cbr-top"><div class="m-icon" style="width:34px;height:34px;font-size:16px;background:'+v.color+'22">'+catIcon(k)+'</div><div class="cbr-name">'+v.label+'</div><div class="cbr-amounts">'+fmt(spent)+' / '+(limit?fmt(limit):'No limit')+'</div></div><div class="cbr-bar"><div class="cbr-fill" style="width:'+pct+'%;background:'+barColor+'"></div></div><div class="cbr-bottom"><span class="cbr-status" style="color:'+(pct>=100?'#f87171':pct>=80?'#fbbf24':'var(--text3)')+'">'+( limit?(pct>=100?fmt(spent-limit)+' over limit':fmt(limit-spent)+' remaining'):'No limit set')+'</span><span class="cbr-edit" onclick="openCatLimitModal(\''+k+'\')">Edit</span></div></div>';
   }).join('');
 }
-let editingCat=null;
-function openCatLimitModal(cat){editingCat=cat;document.getElementById('clm-title').textContent='Set limit · '+catLabel(cat);const cur=state.catLimits[cat]||0;document.getElementById('clm-slider').value=cur;document.getElementById('clm-val').textContent=fmt(cur);document.getElementById('cat-limit-modal').classList.add('open');}
-function updateCatLimit(v){document.getElementById('clm-val').textContent=state.currency+parseInt(v);}
-function saveCatLimit(){state.catLimits[editingCat]=parseInt(document.getElementById('clm-slider').value);saveState();closeCatLimitModal();renderCategories();showToast('Limit saved!');}
+
+function openCatLimitModal(cat){editingCat=cat;document.getElementById('clm-title').textContent='Limit: '+catLabel(cat);const cur=appSettings.categoryLimits[cat]||0;document.getElementById('clm-slider').value=cur;document.getElementById('clm-val').textContent=fmt(cur);document.getElementById('cat-limit-modal').classList.add('open');}
+async function saveCatLimit(){const limit=parseInt(document.getElementById('clm-slider').value);await apiCall('/api/category-limits','POST',{category:editingCat,limit});appSettings.categoryLimits[editingCat]=limit;closeCatLimitModal();renderCategories();showToast('Limit saved!');}
 function closeCatLimitModal(){document.getElementById('cat-limit-modal').classList.remove('open');}
 
-// ── BANK STATEMENT ────────────────────────────────────
-let parsedBankTxs=[];
-function handleBankUpload(input){
-  const file=input.files[0];if(!file)return;
+// ── BANK STATEMENTS ───────────────────────────────────
+function selStmtType(t){selectedStmtType=t;['bank','credit','loc'].forEach(x=>document.getElementById('stype-'+x).classList.toggle('selected',x===t));}
+
+function handleFileUpload(input){
+  const file=input.files[0]; if(!file) return;
   const reader=new FileReader();
-  reader.onload=function(e){parsedBankTxs=parseBankStatement(e.target.result);renderBankResults();};
+  reader.onload=e=>{document.getElementById('stmt-text').value=e.target.result;};
   reader.readAsText(file);
 }
-function parseBankStatement(text){
-  const lines=text.split(/\r?\n/).filter(l=>l.trim());
-  const results=[];
-  const amountRe=/\$?\s*(\d{1,6}[.,]\d{2})/;
-  const dateRe=/(\d{4}[-\/]\d{2}[-\/]\d{2}|\d{2}[-\/]\d{2}[-\/]\d{4})/;
-  lines.forEach(line=>{
-    const amountMatch=line.match(amountRe);if(!amountMatch)return;
-    const amount=parseFloat(amountMatch[1].replace(',','.'));
-    if(amount<0.5||amount>50000)return;
-    const dateMatch=line.match(dateRe);
-    let parsedDate=today();
-    try{if(dateMatch){const d=new Date(dateMatch[0]);if(!isNaN(d))parsedDate=d.toISOString().slice(0,10);}}catch(e){}
-    const upper=line.toUpperCase();
-    let matched=null;
-    for(const p of BANK_PATTERNS){if(p.pattern.test(upper)){matched=p;break;}}
-    const alreadyLogged=!!state.transactions.find(t=>Math.abs(t.amount-amount)<0.02&&t.date===parsedDate);
-    results.push({raw:line.trim().slice(0,60),merchant:matched?matched.merchant:'Unknown merchant',icon:matched?matched.icon:'❓',cat:matched?matched.cat:'other',amount,date:parsedDate,confidence:matched?95:0,alreadyLogged,needsReview:!matched});
-  });
-  return results.slice(0,30);
+
+async function parseStatement(){
+  const text=document.getElementById('stmt-text').value.trim();
+  if(!text){showToast('Paste statement text or upload CSV first');return;}
+  showToast('Parsing...');
+  const res=await apiCall('/api/parse-statement','POST',{text,statementType:selectedStmtType});
+  if(!res||!res.transactions){showToast('Could not parse — try a different format');return;}
+  parsedStmtTxs=res.transactions;
+  renderBankResults();
 }
+
 function renderBankResults(){
-  if(!parsedBankTxs.length){showToast('No transactions found in file');return;}
+  if(!parsedStmtTxs.length){showToast('No transactions found');return;}
   document.getElementById('bank-results').style.display='block';
-  const matched=parsedBankTxs.filter(t=>!t.needsReview).length;
-  const needs=parsedBankTxs.filter(t=>t.needsReview).length;
-  document.getElementById('bank-match-summary').textContent=matched+' matched · '+needs+' need review';
-  document.getElementById('bank-tx-list').innerHTML=parsedBankTxs.map(t=>`<div class="bank-tx-row"><div class="bank-dot" style="background:${t.needsReview?'#f87171':t.alreadyLogged?'#fbbf24':'#34d399'}"></div><div class="bank-info"><div class="bank-name">${t.icon} ${t.merchant}</div><div class="bank-raw">${t.raw}</div><span class="bank-match ${t.needsReview?'match-bad':t.alreadyLogged?'match-warn':'match-ok'}">${t.needsReview?'Needs your input':t.alreadyLogged?'Already logged':catLabel(t.cat)+' · '+t.confidence+'% match'}</span></div><div class="bank-amount">-${fmt(t.amount)}</div></div>`).join('');
+  const matched=parsedStmtTxs.filter(t=>!t.needsReview).length;
+  document.getElementById('bank-result-title').textContent=parsedStmtTxs.length+' transactions found';
+  document.getElementById('bank-match-summary').textContent=matched+' auto-matched';
+  document.getElementById('bank-tx-list').innerHTML=parsedStmtTxs.map(t=>
+    '<div class="bank-tx-row"><div class="bank-dot" style="background:'+(t.needsReview?'#f87171':'#34d399')+'"></div>'+
+    '<div class="bank-info"><div class="bank-name">'+t.icon+' '+t.merchant+'</div>'+
+    '<div class="bank-raw">'+t.description+'</div>'+
+    '<span class="bank-match '+(t.needsReview?'match-bad':'match-ok')+'">'+(t.needsReview?'Needs review':catLabel(t.category)+' '+t.confidence+'%')+'</span></div>'+
+    '<div class="bank-amount" style="color:'+(t.type==='income'?'var(--green)':'var(--red)')+'">'+( t.type==='income'?'+':'-')+fmt(t.amount)+'</div></div>'
+  ).join('');
 }
-function importMatched(){
-  const toImport=parsedBankTxs.filter(t=>!t.needsReview&&!t.alreadyLogged);
-  toImport.forEach(t=>{state.transactions.push({id:Date.now()+Math.random(),merchant:t.merchant,icon:t.icon,cat:t.cat,amount:t.amount,date:t.date,type:'expense',source:'card',note:'Imported from bank statement'});});
-  saveState();showToast('✓ '+toImport.length+' transactions imported!');renderDashboard();
+
+async function importMatched(){
+  const toImport=parsedStmtTxs.filter(t=>!t.needsReview);
+  if(!toImport.length){showToast('No matched transactions');return;}
+  const res=await apiCall('/api/transactions/batch','POST',{transactions:toImport});
+  if(res?.ok){showToast(res.imported+' transactions imported!');await loadTransactions();renderDashboard();}
+}
+
+async function importAll(){
+  if(!parsedStmtTxs.length){showToast('No transactions');return;}
+  const res=await apiCall('/api/transactions/batch','POST',{transactions:parsedStmtTxs});
+  if(res?.ok){showToast(res.imported+' transactions imported!');await loadTransactions();renderDashboard();}
 }
 
 // ── INSIGHTS ──────────────────────────────────────────
-function renderInsights(){
-  const now=new Date();document.getElementById('insights-month').textContent=now.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
-  const mx=thisMonthTx();
+async function renderInsights(){
+  document.getElementById('insights-sub').textContent=new Date().toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  const mx=thisMonth();
   const spent=mx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
-  const left=state.budget-spent;
+  const left=appSettings.budget-spent;
   document.getElementById('ins-spent').textContent=fmt(spent);
   document.getElementById('ins-left').textContent=fmt(left);
   document.getElementById('ins-left').style.color=left<0?'var(--red)':'var(--green)';
-  const byCat={};mx.filter(t=>t.type==='expense').forEach(t=>{byCat[t.cat]=(byCat[t.cat]||0)+t.amount;});
+  document.getElementById('ins-you').textContent=fmt(mx.filter(t=>t.type==='expense'&&t.who==='you').reduce((a,t)=>a+t.amount,0));
+  document.getElementById('ins-wife').textContent=fmt(mx.filter(t=>t.type==='expense'&&t.who==='wife').reduce((a,t)=>a+t.amount,0));
+  try{
+    const insights=await apiCall('/api/insights?months=6');
+    if(insights?.byMonth){
+      const months=Object.keys(insights.byMonth).sort();
+      const maxVal=Math.max(...Object.values(insights.byMonth),1);
+      document.getElementById('month-bars').innerHTML=months.map(m=>{
+        const val=insights.byMonth[m];
+        const h=Math.round(val/maxVal*80);
+        const label=new Date(m+'-01').toLocaleDateString('en-CA',{month:'short'});
+        return '<div class="month-bar-col"><div class="month-bar-val">'+fmt(val)+'</div><div class="month-bar" style="height:'+h+'px"></div><div class="month-bar-label">'+label+'</div></div>';
+      }).join('');
+    }
+  }catch(e){}
+  const byCat={};mx.filter(t=>t.type==='expense').forEach(t=>{byCat[t.category]=(byCat[t.category]||0)+t.amount;});
   const maxCat=Math.max(...Object.values(byCat),1);
-  const barsEl=document.getElementById('ins-bars');
-  barsEl.innerHTML=Object.keys(byCat).length?Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="insight-bar-row"><div class="insight-name">${catIcon(k)} ${catLabel(k)}</div><div class="insight-bar-track"><div class="insight-bar-fill" style="width:${Math.round(v/maxCat*100)}%;background:${catColor(k)}"></div></div><div class="insight-val">${fmt(v)}</div></div>`).join(''):'<div class="empty"><div class="empty-icon">📊</div>No data yet</div>';
-  const byM={};mx.filter(t=>t.type==='expense').forEach(t=>{if(!byM[t.merchant])byM[t.merchant]={amount:0,icon:t.icon,cat:t.cat};byM[t.merchant].amount+=t.amount;});
+  document.getElementById('ins-bars').innerHTML=Object.keys(byCat).length?Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,v])=>'<div class="insight-bar-row"><div class="insight-name">'+catIcon(k)+' '+catLabel(k)+'</div><div class="insight-bar-track"><div class="insight-bar-fill" style="width:'+Math.round(v/maxCat*100)+'%;background:'+catColor(k)+'"></div></div><div class="insight-val">'+fmt(v)+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">📊</div>No data yet</div>';
+  const byM={};mx.filter(t=>t.type==='expense').forEach(t=>{if(!byM[t.merchant])byM[t.merchant]={amount:0,icon:t.icon,cat:t.category};byM[t.merchant].amount+=t.amount;});
   const topM=Object.entries(byM).sort((a,b)=>b[1].amount-a[1].amount).slice(0,5);
-  document.getElementById('ins-merchants').innerHTML=topM.length?topM.map(([name,d])=>`<div class="card-row"><div class="m-icon">${d.icon}</div><div style="flex:1"><div class="exp-name">${name}</div><div class="exp-meta"><span class="cat-pill ${catBadge(d.cat)}">${catLabel(d.cat)}</span></div></div><div class="exp-amount neg">${fmt(d.amount)}</div></div>`).join(''):'<div class="empty"><div class="empty-icon">🏪</div>No data yet</div>';
+  document.getElementById('ins-merchants').innerHTML=topM.length?topM.map(([name,d])=>'<div class="card-row"><div class="m-icon">'+d.icon+'</div><div style="flex:1"><div class="exp-name">'+name+'</div><div class="exp-meta"><span class="cat-pill '+catBadge(d.cat)+'">'+catLabel(d.cat)+'</span></div></div><div class="exp-amount neg">'+fmt(d.amount)+'</div></div>').join(''):'<div class="empty"><div class="empty-icon">🏪</div>No data yet</div>';
 }
 
 // ── SETTINGS ──────────────────────────────────────────
 function renderSettings(){
-  document.getElementById('set-budget').value=state.budget;
-  const k=getApiKey();document.getElementById('set-api-key').value=k?'••••••••••••'+k.slice(-4):'';
-  document.getElementById('settings-cat-limits').innerHTML=Object.entries(CATS).filter(([k])=>k!=='income').map(([k,v])=>`<div class="settings-row"><span class="settings-label">${v.icon} ${v.label}</span><input class="settings-input" type="number" value="${state.catLimits[k]||0}" onchange="state.catLimits['${k}']=parseInt(this.value)||0;saveState()"></div>`).join('');
+  document.getElementById('set-budget').value=appSettings.budget;
+  const k=getApiKey();document.getElementById('set-api-key').value=k?'....'+k.slice(-4):'';
+  document.getElementById('settings-cat-limits').innerHTML=Object.entries(CATS).filter(([k])=>k!=='income').map(([k,v])=>'<div class="settings-row"><span class="settings-label">'+catIcon(k)+' '+v.label+'</span><input class="settings-input" type="number" value="'+(appSettings.categoryLimits[k]||0)+'" onchange="updateLimitInline(\''+k+'\',this.value)"></div>').join('');
 }
-function saveSetting(key,val){if(key==='budget')state.budget=parseFloat(val)||3000;if(key==='currency')state.currency=val;saveState();renderDashboard();showToast('Saved!');}
-function addCustomMerchant(){
-  const name=document.getElementById('cust-merchant-name').value.trim();
-  const icon=document.getElementById('cust-merchant-icon').value.trim()||'🏪';
-  const cat=document.getElementById('cust-merchant-cat').value;
-  if(!name){showToast('Please enter a merchant name');return;}
-  state.customMerchants.push({name,icon,cat});saveState();
-  document.getElementById('cust-merchant-name').value='';document.getElementById('cust-merchant-icon').value='';
-  showToast('✓ Merchant added!');
-}
-function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='myfinance-backup.json';a.click();}
-function confirmClear(){if(confirm('Delete ALL data? This cannot be undone.')){state.transactions=[];state.customMerchants=[];saveState();renderDashboard();showToast('Data cleared');}}
 
-// ── INIT ──────────────────────────────────────────────
-renderDashboard();
+async function updateLimitInline(cat,val){await apiCall('/api/category-limits','POST',{category:cat,limit:parseInt(val)||0});appSettings.categoryLimits[cat]=parseInt(val)||0;}
+async function saveBudget(val){await apiCall('/api/settings','POST',{key:'budget',value:val});appSettings.budget=parseFloat(val)||3000;renderDashboard();showToast('Budget saved!');}
+async function changePasswords(){
+  const py=document.getElementById('new-pwd-you').value.trim();
+  const pw=document.getElementById('new-pwd-wife').value.trim();
+  if(py){await apiCall('/api/change-password','POST',{targetUser:'you',newPassword:py});}
+  if(pw){await apiCall('/api/change-password','POST',{targetUser:'wife',newPassword:pw});}
+  document.getElementById('new-pwd-you').value='';
+  document.getElementById('new-pwd-wife').value='';
+  showToast('Passwords updated!');
+}
+async function addMerchant(){
+  const name=document.getElementById('cust-name').value.trim();
+  const icon=document.getElementById('cust-icon').value.trim()||'🏪';
+  const category=document.getElementById('cust-cat').value;
+  if(!name){showToast('Enter merchant name');return;}
+  await apiCall('/api/merchants','POST',{name,icon,category});
+  appSettings.customMerchants.push({name,icon,category});
+  document.getElementById('cust-name').value='';document.getElementById('cust-icon').value='';
+  showToast('Merchant added!');
+}
+async function exportData(){
+  const data=await apiCall('/api/transactions');
+  const blob=new Blob([JSON.stringify({transactions:data,settings:appSettings},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='tjfinance-export.json';a.click();
+}
 </script>
 </body>
 </html>
