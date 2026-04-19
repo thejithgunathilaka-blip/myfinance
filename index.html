@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MyFinance">
+<title>MyFinance</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0f0f12;
+    --bg2: #16161c;
+    --bg3: #1e1e28;
+    --bg4: #252530;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #f0f0f5;
+    --text2: #9090a8;
+    --text3: #5a5a72;
+    --accent: #6c63ff;
+    --accent2: #8b85ff;
+    --green: #34d399;
+    --green-bg: rgba(52,211,153,0.1);
+    --amber: #fbbf24;
+    --amber-bg: rgba(251,191,36,0.1);
+    --red: #f87171;
+    --red-bg: rgba(248,113,113,0.1);
+    --blue: #60a5fa;
+    --blue-bg: rgba(96,165,250,0.1);
+    --radius: 14px;
+    --radius-sm: 8px;
+    --radius-xs: 6px;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    max-width: 430px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    padding: 52px 20px 16px;
+    background: linear-gradient(180deg, rgba(108,99,255,0.15) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .header-greeting { font-size: 13px; color: var(--text3); font-weight: 400; margin-bottom: 4px; }
+  .header-title { font-size: 24px; font-weight: 600; letter-spacing: -0.5px; }
+  .header-date { font-size: 12px; color: var(--text3); margin-top: 2px; }
+  .settings-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--bg3); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 16px; }
+
+  /* Budget ring */
+  .budget-card {
+    margin: 16px 20px;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .ring-wrap { position: relative; width: 90px; height: 90px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); }
+  .ring-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); text-align: center; }
+  .ring-pct { font-size: 18px; font-weight: 600; }
+  .ring-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; }
+  .budget-info { flex: 1; }
+  .budget-row { display: flex; justify-content: space-between; margin-bottom: 8px; }
+  .budget-item-label { font-size: 11px; color: var(--text3); }
+  .budget-item-val { font-size: 13px; font-weight: 500; }
+  .budget-item-val.green { color: var(--green); }
+  .budget-item-val.red { color: var(--red); }
+  .budget-item-val.amber { color: var(--amber); }
+  .mini-bar { height: 4px; background: var(--bg4); border-radius: 2px; overflow: hidden; margin-top: 4px; }
+  .mini-bar-fill { height: 100%; border-radius: 2px; transition: width 0.6s ease; }
+
+  /* Tabs / Nav */
+  .nav {
+    position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+    width: 100%; max-width: 430px;
+    background: var(--bg2);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 8px 0 20px;
+    z-index: 100;
+  }
+  .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 6px 0; }
+  .nav-icon { font-size: 20px; }
+  .nav-label { font-size: 10px; color: var(--text3); }
+  .nav-item.active .nav-label { color: var(--accent2); }
+  .nav-item.active .nav-icon { filter: drop-shadow(0 0 6px rgba(108,99,255,0.8)); }
+
+  /* Page sections */
+  .page { display: none; padding: 0 20px; }
+  .page.active { display: block; }
+
+  /* Section headings */
+  .section-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin: 20px 0 10px;
+  }
+  .section-title { font-size: 13px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; }
+  .section-action { font-size: 12px; color: var(--accent2); cursor: pointer; }
+
+  /* Cards */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .card-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-row:last-child { border-bottom: none; }
+  .card-row:active { background: var(--bg3); }
+
+  /* Merchant icon */
+  .m-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+    background: var(--bg3);
+  }
+
+  /* Expense rows */
+  .exp-name { font-size: 14px; font-weight: 500; }
+  .exp-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+  .exp-amount { margin-left: auto; font-size: 14px; font-weight: 600; font-family: var(--mono); }
+  .exp-amount.neg { color: var(--red); }
+  .exp-amount.pos { color: var(--green); }
+
+  /* Category pill */
+  .cat-pill {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-weight: 500; display: inline-block; margin-top: 3px;
+  }
+
+  /* Input styles */
+  .field { margin-bottom: 14px; }
+  .field-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 6px; }
+  .field-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 11px 14px;
+    font-size: 14px; color: var(--text); font-family: var(--font);
+    outline: none;
+  }
+  .field-input:focus { border-color: var(--accent); }
+  .field-select {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 11px 14px;
+    font-size: 14px; color: var(--text); font-family: var(--font);
+    outline: none; appearance: none;
+  }
+  .big-amount-wrap { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .big-prefix { font-size: 32px; font-weight: 300; color: var(--text3); }
+  .big-amount-input {
+    flex: 1; background: transparent; border: none; border-bottom: 2px solid var(--border2);
+    padding: 6px 0; font-size: 32px; font-weight: 600; color: var(--text);
+    font-family: var(--mono); outline: none;
+  }
+  .big-amount-input:focus { border-bottom-color: var(--accent); }
+
+  /* Buttons */
+  .btn {
+    display: block; width: 100%; padding: 13px;
+    border-radius: var(--radius-sm); font-size: 14px; font-weight: 600;
+    cursor: pointer; border: none; text-align: center; font-family: var(--font);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:active { opacity: 0.85; }
+  .btn-outline { background: transparent; border: 1px solid var(--border2); color: var(--text2); margin-top: 8px; }
+
+  /* Chip grid */
+  .chip-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+  .chip {
+    font-size: 12px; padding: 6px 12px; border-radius: 20px;
+    border: 1px solid var(--border2); cursor: pointer;
+    color: var(--text2); background: var(--bg3);
+  }
+  .chip.selected { background: rgba(108,99,255,0.2); border-color: var(--accent); color: var(--accent2); }
+
+  /* Category budget rows */
+  .cat-budget-row { padding: 14px; border-bottom: 1px solid var(--border); }
+  .cat-budget-row:last-child { border-bottom: none; }
+  .cbr-top { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .cbr-name { font-size: 14px; font-weight: 500; flex: 1; }
+  .cbr-amounts { font-size: 12px; color: var(--text3); font-family: var(--mono); }
+  .cbr-bar { height: 6px; background: var(--bg4); border-radius: 3px; overflow: hidden; }
+  .cbr-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+  .cbr-bottom { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; }
+  .cbr-status { font-size: 11px; }
+  .cbr-edit { font-size: 11px; color: var(--accent2); cursor: pointer; padding: 2px 8px; border: 1px solid var(--border); border-radius: 20px; }
+
+  /* Modal */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7); z-index: 200;
+    align-items: flex-end; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2); border-radius: var(--radius) var(--radius) 0 0;
+    border: 1px solid var(--border); border-bottom: none;
+    padding: 20px; width: 100%; max-width: 430px;
+    padding-bottom: 40px;
+  }
+  .modal-handle { width: 36px; height: 4px; background: var(--bg4); border-radius: 2px; margin: 0 auto 16px; }
+  .modal-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+
+  /* Merchant search */
+  .search-wrap { position: relative; margin-bottom: 10px; }
+  .search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; pointer-events: none; }
+  .search-input {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 12px 10px 36px;
+    font-size: 14px; color: var(--text); font-family: var(--font); outline: none;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .merchant-list { max-height: 240px; overflow-y: auto; }
+  .merchant-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 12px; border-radius: var(--radius-xs);
+    cursor: pointer;
+  }
+  .merchant-item:active { background: var(--bg3); }
+  .merchant-item.selected { background: rgba(108,99,255,0.12); }
+  .mi-name { font-size: 13px; font-weight: 500; }
+  .mi-cat { font-size: 11px; color: var(--text3); }
+  .mi-check { margin-left: auto; font-size: 14px; color: var(--accent); display: none; }
+  .merchant-item.selected .mi-check { display: block; }
+
+  /* Date chips */
+  .date-chips { display: flex; gap: 8px; margin-bottom: 14px; }
+  .date-chip { flex: 1; text-align: center; padding: 9px; border-radius: var(--radius-sm); border: 1px solid var(--border2); font-size: 12px; color: var(--text2); cursor: pointer; }
+  .date-chip.selected { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent2); }
+
+  /* Payment source */
+  .source-chips { display: flex; gap: 6px; margin-bottom: 14px; flex-wrap: wrap; }
+  .source-chip { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border2); font-size: 12px; color: var(--text2); cursor: pointer; }
+  .source-chip.selected { background: rgba(108,99,255,0.15); border-color: var(--accent); color: var(--accent2); }
+
+  /* Bank statement */
+  .upload-area {
+    border: 2px dashed var(--border2); border-radius: var(--radius);
+    padding: 32px 20px; text-align: center; cursor: pointer;
+    margin-bottom: 14px;
+  }
+  .upload-area:active { border-color: var(--accent); background: rgba(108,99,255,0.05); }
+  .upload-icon { font-size: 36px; margin-bottom: 10px; }
+  .upload-label { font-size: 14px; font-weight: 500; margin-bottom: 4px; }
+  .upload-sub { font-size: 12px; color: var(--text3); }
+
+  /* Bank transactions */
+  .bank-tx-row {
+    padding: 12px 14px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  .bank-tx-row:last-child { border-bottom: none; }
+  .bank-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+  .bank-info { flex: 1; }
+  .bank-name { font-size: 13px; font-weight: 500; }
+  .bank-raw { font-size: 10px; color: var(--text3); font-family: var(--mono); margin-top: 2px; }
+  .bank-match { font-size: 10px; padding: 2px 7px; border-radius: 20px; margin-top: 4px; display: inline-block; }
+  .match-ok { background: var(--green-bg); color: var(--green); }
+  .match-warn { background: var(--amber-bg); color: var(--amber); }
+  .match-bad { background: var(--red-bg); color: var(--red); }
+  .bank-amount { font-size: 13px; font-weight: 600; font-family: var(--mono); color: var(--red); }
+
+  /* Insights */
+  .insight-bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .insight-name { font-size: 13px; width: 110px; flex-shrink: 0; }
+  .insight-bar-track { flex: 1; height: 8px; background: var(--bg4); border-radius: 4px; overflow: hidden; }
+  .insight-bar-fill { height: 100%; border-radius: 4px; }
+  .insight-val { font-size: 12px; font-family: var(--mono); color: var(--text2); width: 50px; text-align: right; }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%);
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 20px; padding: 10px 18px;
+    font-size: 13px; font-weight: 500; z-index: 300;
+    opacity: 0; transition: opacity 0.3s;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; }
+
+  /* Settings */
+  .settings-row {
+    display: flex; align-items: center; padding: 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .settings-row:last-child { border-bottom: none; }
+  .settings-label { font-size: 14px; flex: 1; }
+  .settings-val { font-size: 13px; color: var(--text3); font-family: var(--mono); }
+  .settings-input {
+    background: var(--bg4); border: 1px solid var(--border);
+    border-radius: var(--radius-xs); padding: 6px 10px;
+    font-size: 13px; color: var(--text); font-family: var(--mono);
+    width: 100px; text-align: right; outline: none;
+  }
+  .settings-input:focus { border-color: var(--accent); }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text3); font-size: 14px; }
+  .empty-icon { font-size: 40px; margin-bottom: 10px; }
+
+  /* Summary totals */
+  .sum-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+  .sum-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px; }
+  .sum-label { font-size: 11px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .sum-val { font-size: 20px; font-weight: 600; font-family: var(--mono); }
+
+  /* Add expense FAB */
+  .fab {
+    position: fixed; bottom: 88px; right: 20px;
+    width: 52px; height: 52px; border-radius: 50%;
+    background: var(--accent); display: flex; align-items: center; justify-content: center;
+    font-size: 24px; cursor: pointer; z-index: 99;
+    box-shadow: 0 4px 20px rgba(108,99,255,0.5);
+  }
+
+  .income-badge { background: var(--green-bg); color: var(--green); }
+  .food-badge { background: rgba(251,191,36,0.1); color: var(--amber); }
+  .grocery-badge { background: rgba(52,211,153,0.1); color: var(--green); }
+  .transport-badge { background: var(--blue-bg); color: var(--blue); }
+  .housing-badge { background: rgba(167,139,250,0.1); color: #a78bfa; }
+  .subs-badge { background: rgba(236,72,153,0.1); color: #ec4899; }
+  .health-badge { background: rgba(248,113,113,0.1); color: var(--red); }
+  .other-badge { background: var(--bg4); color: var(--text3); }
+
+  .page-title { font-size: 20px; font-weight: 600; letter-spacing: -0.3px; padding: 20px 0 4px; }
+  .page-sub { font-size: 13px; color: var(--text3); margin-bottom: 4px; }
+  .divider { height: 1px; background: var(--border); margin: 4px 0; }
+
+  input[type=file] { display: none; }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header" id="main-header">
+  <div class="header-top">
+    <div>
+      <div class="header-greeting">Good day 👋</div>
+      <div class="header-title">MyFinance</div>
+      <div class="header-date" id="header-date"></div>
+    </div>
+    <div class="settings-btn" onclick="showPage('settings')">⚙️</div>
+  </div>
+</div>
+
+<!-- Budget ring card -->
+<div class="budget-card" id="budget-card">
+  <div class="ring-wrap">
+    <svg width="90" height="90" viewBox="0 0 90 90">
+      <circle cx="45" cy="45" r="38" fill="none" stroke="#1e1e28" stroke-width="8"/>
+      <circle id="ring-progress" cx="45" cy="45" r="38" fill="none" stroke="#6c63ff" stroke-width="8"
+        stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="239"
+        style="transition:stroke-dashoffset 0.8s ease"/>
+    </svg>
+    <div class="ring-center">
+      <div class="ring-pct" id="ring-pct">0%</div>
+      <div class="ring-label">used</div>
+    </div>
+  </div>
+  <div class="budget-info">
+    <div class="budget-row">
+      <span class="budget-item-label">Budget</span>
+      <span class="budget-item-val" id="bi-budget">$0</span>
+    </div>
+    <div class="budget-row">
+      <span class="budget-item-label">Spent</span>
+      <span class="budget-item-val red" id="bi-spent">$0</span>
+    </div>
+    <div class="budget-row">
+      <span class="budget-item-label">Available</span>
+      <span class="budget-item-val green" id="bi-left">$0</span>
+    </div>
+    <div class="mini-bar">
+      <div class="mini-bar-fill" id="mini-bar-fill" style="background:var(--green);width:0%"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Pages -->
+<!-- Dashboard -->
+<div class="page active" id="page-dashboard">
+  <div class="section-head">
+    <span class="section-title">Today's expenses</span>
+    <span class="section-action" onclick="showAddModal()">+ Add</span>
+  </div>
+  <div class="card" id="today-list"><div class="empty"><div class="empty-icon">🧾</div>No expenses today yet</div></div>
+
+  <div class="section-head">
+    <span class="section-title">This month</span>
+  </div>
+  <div class="sum-grid">
+    <div class="sum-card">
+      <div class="sum-label">Income</div>
+      <div class="sum-val green" id="sum-income">$0</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Expenses</div>
+      <div class="sum-val red" id="sum-expenses">$0</div>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="section-title">Recent transactions</span></div>
+  <div class="card" id="recent-list"><div class="empty"><div class="empty-icon">💳</div>No transactions yet</div></div>
+</div>
+
+<!-- Add Expense Page -->
+<div class="page" id="page-add">
+  <div class="page-title">Add expense</div>
+  <div class="page-sub" style="margin-bottom:16px">All data saved on your device only</div>
+
+  <div class="big-amount-wrap">
+    <span class="big-prefix">$</span>
+    <input class="big-amount-input" type="number" id="add-amount" placeholder="0.00" step="0.01">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Merchant</div>
+    <div style="display:flex;gap:8px">
+      <input class="field-input" type="text" id="add-merchant-display" placeholder="Tap to choose..." readonly style="cursor:pointer;flex:1" onclick="openMerchantModal()">
+      <div style="padding:11px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);cursor:pointer;font-size:16px" onclick="openMerchantModal()">🔍</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Category (auto-set by merchant)</div>
+    <div class="chip-grid" id="add-cat-chips"></div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Date</div>
+    <div class="date-chips">
+      <div class="date-chip selected" id="dc-today" onclick="selectDate('today')">Today</div>
+      <div class="date-chip" id="dc-yesterday" onclick="selectDate('yesterday')">Yesterday</div>
+      <div class="date-chip" id="dc-pick" onclick="selectDate('pick')">Pick date</div>
+    </div>
+    <input class="field-input" type="date" id="add-date-picker" style="display:none">
+  </div>
+
+  <div class="field">
+    <div class="field-label">Paid via</div>
+    <div class="source-chips">
+      <div class="source-chip selected" id="src-card" onclick="selectSource('card')">Bank card</div>
+      <div class="source-chip" id="src-app" onclick="selectSource('app')">Another app</div>
+      <div class="source-chip" id="src-cash" onclick="selectSource('cash')">Cash</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Type</div>
+    <div class="source-chips">
+      <div class="source-chip selected" id="type-exp" onclick="selectType('expense')">Expense</div>
+      <div class="source-chip" id="type-inc" onclick="selectType('income')">Income</div>
+    </div>
+  </div>
+
+  <div class="field">
+    <div class="field-label">Note (optional)</div>
+    <input class="field-input" type="text" id="add-note" placeholder="e.g. Morning coffee with Sarah">
+  </div>
+
+  <button class="btn btn-primary" onclick="saveExpense()">Save expense</button>
+  <button class="btn btn-outline" onclick="showPage('dashboard')">Cancel</button>
+</div>
+
+<!-- Categories Page -->
+<div class="page" id="page-categories">
+  <div class="page-title">Category budgets</div>
+  <div class="page-sub" id="cat-month-label" style="margin-bottom:16px"></div>
+  <div class="card" id="cat-budget-list"></div>
+</div>
+
+<!-- Bank Statement Page -->
+<div class="page" id="page-bank">
+  <div class="page-title">Bank statement</div>
+  <div class="page-sub" style="margin-bottom:16px">Read entirely on your device — never uploaded anywhere</div>
+
+  <label for="pdf-input">
+    <div class="upload-area">
+      <div class="upload-icon">📄</div>
+      <div class="upload-label">Upload bank statement</div>
+      <div class="upload-sub">PDF or CSV · processed locally on your device</div>
+    </div>
+  </label>
+  <input type="file" id="pdf-input" accept=".pdf,.csv" onchange="handleBankUpload(this)">
+
+  <div id="bank-results" style="display:none">
+    <div class="section-head">
+      <span class="section-title">Detected transactions</span>
+      <span class="section-action" id="bank-match-summary"></span>
+    </div>
+    <div class="card" id="bank-tx-list"></div>
+    <button class="btn btn-primary" id="import-btn" onclick="importMatched()" style="margin-top:4px">Import all matched transactions</button>
+  </div>
+</div>
+
+<!-- Insights Page -->
+<div class="page" id="page-insights">
+  <div class="page-title">Insights</div>
+  <div class="page-sub" style="margin-bottom:16px" id="insights-month"></div>
+
+  <div class="sum-grid">
+    <div class="sum-card">
+      <div class="sum-label">Total spent</div>
+      <div class="sum-val red" id="ins-spent">$0</div>
+    </div>
+    <div class="sum-card">
+      <div class="sum-label">Remaining</div>
+      <div class="sum-val green" id="ins-left">$0</div>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="section-title">Spending by category</span></div>
+  <div class="card" style="padding:16px" id="ins-bars"></div>
+
+  <div class="section-head"><span class="section-title">Top merchants this month</span></div>
+  <div class="card" id="ins-merchants"></div>
+</div>
+
+<!-- Settings Page -->
+<div class="page" id="page-settings">
+  <div class="page-title">Settings</div>
+  <div class="page-sub" style="margin-bottom:16px">Your data never leaves this device</div>
+
+  <div class="section-head"><span class="section-title">Budget</span></div>
+  <div class="card">
+    <div class="settings-row">
+      <span class="settings-label">Monthly budget</span>
+      <input class="settings-input" type="number" id="set-budget" placeholder="3000" onchange="saveSetting('budget', this.value)">
+    </div>
+    <div class="settings-row">
+      <span class="settings-label">Currency</span>
+      <select class="settings-input" id="set-currency" style="width:80px" onchange="saveSetting('currency', this.value)">
+        <option value="$">$ CAD</option>
+        <option value="$">$ USD</option>
+        <option value="£">£ GBP</option>
+        <option value="€">€ EUR</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="section-head"><span class="section-title">Category limits</span></div>
+  <div class="card" id="settings-cat-limits"></div>
+
+  <div class="section-head"><span class="section-title">Add custom merchant</span></div>
+  <div class="card" style="padding:14px">
+    <div class="field">
+      <div class="field-label">Merchant name</div>
+      <input class="field-input" type="text" id="cust-merchant-name" placeholder="e.g. Local Bakery">
+    </div>
+    <div class="field">
+      <div class="field-label">Icon (emoji)</div>
+      <input class="field-input" type="text" id="cust-merchant-icon" placeholder="🏪" maxlength="2">
+    </div>
+    <div class="field">
+      <div class="field-label">Category</div>
+      <select class="field-select" id="cust-merchant-cat">
+        <option value="food">Eating out</option>
+        <option value="grocery">Groceries</option>
+        <option value="transport">Transport</option>
+        <option value="shopping">Shopping</option>
+        <option value="health">Health</option>
+        <option value="subscriptions">Subscriptions</option>
+        <option value="housing">Housing</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <button class="btn btn-primary" onclick="addCustomMerchant()">Add merchant</button>
+  </div>
+
+  <div class="section-head"><span class="section-title">Data</span></div>
+  <div class="card">
+    <div class="settings-row" onclick="exportData()" style="cursor:pointer">
+      <span class="settings-label">Export all data (JSON)</span>
+      <span style="font-size:16px">📤</span>
+    </div>
+    <div class="settings-row" onclick="confirmClear()" style="cursor:pointer">
+      <span class="settings-label" style="color:var(--red)">Clear all data</span>
+      <span style="font-size:16px">🗑️</span>
+    </div>
+  </div>
+  <div style="height:20px"></div>
+</div>
+
+<!-- Bottom Nav -->
+<div class="nav">
+  <div class="nav-item active" id="nav-dashboard" onclick="showPage('dashboard')">
+    <span class="nav-icon">🏠</span><span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item" id="nav-add" onclick="showPage('add')">
+    <span class="nav-icon">➕</span><span class="nav-label">Add</span>
+  </div>
+  <div class="nav-item" id="nav-categories" onclick="showPage('categories')">
+    <span class="nav-icon">🏷️</span><span class="nav-label">Budgets</span>
+  </div>
+  <div class="nav-item" id="nav-bank" onclick="showPage('bank')">
+    <span class="nav-icon">📄</span><span class="nav-label">Bank</span>
+  </div>
+  <div class="nav-item" id="nav-insights" onclick="showPage('insights')">
+    <span class="nav-icon">📊</span><span class="nav-label">Insights</span>
+  </div>
+</div>
+
+<!-- Merchant Modal -->
+<div class="modal-overlay" id="merchant-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Choose merchant</div>
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-input" type="text" id="merchant-search" placeholder="Search..." oninput="filterMerchants(this.value)">
+    </div>
+    <div class="merchant-list" id="merchant-list"></div>
+    <div style="margin-top:10px;border-top:1px solid var(--border);padding-top:10px">
+      <button class="btn btn-outline" onclick="closeMerchantModal()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Category Limit Modal -->
+<div class="modal-overlay" id="cat-limit-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="clm-title">Set limit</div>
+    <div style="text-align:center;font-size:28px;font-weight:600;font-family:var(--mono);margin:10px 0" id="clm-val">$300</div>
+    <input type="range" id="clm-slider" min="0" max="2000" step="10" value="300" oninput="updateCatLimit(this.value)">
+    <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px;margin-bottom:16px"><span>$0</span><span>$2,000</span></div>
+    <button class="btn btn-primary" onclick="saveCatLimit()">Save limit</button>
+    <button class="btn btn-outline" onclick="closeCatLimitModal()">Cancel</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────
+const CATS = {
+  food:          { label: 'Eating out',    icon: '🍔', color: '#fbbf24', badge: 'food-badge' },
+  grocery:       { label: 'Groceries',     icon: '🛒', color: '#34d399', badge: 'grocery-badge' },
+  transport:     { label: 'Transport',     icon: '🚗', color: '#60a5fa', badge: 'transport-badge' },
+  housing:       { label: 'Housing',       icon: '🏠', color: '#a78bfa', badge: 'housing-badge' },
+  subscriptions: { label: 'Subscriptions', icon: '📱', color: '#ec4899', badge: 'subs-badge' },
+  health:        { label: 'Health',        icon: '💊', color: '#f87171', badge: 'health-badge' },
+  shopping:      { label: 'Shopping',      icon: '👕', color: '#818cf8', badge: 'housing-badge' },
+  entertainment: { label: 'Entertainment', icon: '🎉', color: '#f472b6', badge: 'subs-badge' },
+  income:        { label: 'Income',        icon: '💰', color: '#34d399', badge: 'income-badge' },
+  other:         { label: 'Other',         icon: '💡', color: '#9090a8', badge: 'other-badge' },
+};
+
+const PRELOADED_MERCHANTS = [
+  { name: 'Tim Hortons',          icon: '☕', cat: 'food' },
+  { name: "McDonald's",           icon: '🍔', cat: 'food' },
+  { name: 'Subway',               icon: '🥖', cat: 'food' },
+  { name: 'Starbucks',            icon: '☕', cat: 'food' },
+  { name: "Harvey's",             icon: '🍔', cat: 'food' },
+  { name: 'Swiss Chalet',         icon: '🍗', cat: 'food' },
+  { name: 'Boston Pizza',         icon: '🍕', cat: 'food' },
+  { name: 'Skip the Dishes',      icon: '🛵', cat: 'food' },
+  { name: 'Uber Eats',            icon: '🛵', cat: 'food' },
+  { name: 'DoorDash',             icon: '🛵', cat: 'food' },
+  { name: 'Walmart',              icon: '🛒', cat: 'grocery' },
+  { name: 'Loblaws',              icon: '🛒', cat: 'grocery' },
+  { name: 'No Frills',            icon: '🛒', cat: 'grocery' },
+  { name: 'Metro',                icon: '🛒', cat: 'grocery' },
+  { name: 'FreshCo',              icon: '🛒', cat: 'grocery' },
+  { name: 'Costco',               icon: '🛒', cat: 'grocery' },
+  { name: 'Food Basics',          icon: '🛒', cat: 'grocery' },
+  { name: 'Real Canadian Superstore', icon: '🛒', cat: 'grocery' },
+  { name: 'Petro-Canada',         icon: '⛽', cat: 'transport' },
+  { name: 'Esso',                 icon: '⛽', cat: 'transport' },
+  { name: 'Shell',                icon: '⛽', cat: 'transport' },
+  { name: 'Uber',                 icon: '🚗', cat: 'transport' },
+  { name: 'TTC',                  icon: '🚌', cat: 'transport' },
+  { name: 'Presto',               icon: '🚌', cat: 'transport' },
+  { name: 'GO Transit',           icon: '🚆', cat: 'transport' },
+  { name: 'Amazon',               icon: '📦', cat: 'shopping' },
+  { name: 'Canadian Tire',        icon: '🔧', cat: 'shopping' },
+  { name: 'Best Buy',             icon: '📺', cat: 'shopping' },
+  { name: 'H&M',                  icon: '👕', cat: 'shopping' },
+  { name: 'Winners',              icon: '👜', cat: 'shopping' },
+  { name: 'Sport Chek',           icon: '👟', cat: 'shopping' },
+  { name: 'HomeSense',            icon: '🏡', cat: 'shopping' },
+  { name: 'Shoppers Drug Mart',   icon: '💊', cat: 'health' },
+  { name: 'Rexall',               icon: '💊', cat: 'health' },
+  { name: 'Netflix',              icon: '📺', cat: 'subscriptions' },
+  { name: 'Spotify',              icon: '🎵', cat: 'subscriptions' },
+  { name: 'Apple',                icon: '🍎', cat: 'subscriptions' },
+  { name: 'Rogers',               icon: '📡', cat: 'subscriptions' },
+  { name: 'Bell',                 icon: '📡', cat: 'subscriptions' },
+  { name: 'Telus',                icon: '📡', cat: 'subscriptions' },
+  { name: 'Amazon Prime',         icon: '📦', cat: 'subscriptions' },
+  { name: 'Disney+',              icon: '🎬', cat: 'subscriptions' },
+  { name: 'Employer / Salary',    icon: '💼', cat: 'income' },
+  { name: 'Freelance Income',     icon: '💻', cat: 'income' },
+  { name: 'Other Income',         icon: '💰', cat: 'income' },
+];
+
+// BANK STATEMENT DECODING PATTERNS
+const BANK_PATTERNS = [
+  { pattern: /TIM\s*HOR|TIMS/i,         merchant: 'Tim Hortons',        icon: '☕', cat: 'food' },
+  { pattern: /MCDONALD|MCG|MCDS/i,      merchant: "McDonald's",          icon: '🍔', cat: 'food' },
+  { pattern: /STARBUCKS|SBUX/i,         merchant: 'Starbucks',           icon: '☕', cat: 'food' },
+  { pattern: /SUBWAY/i,                  merchant: 'Subway',              icon: '🥖', cat: 'food' },
+  { pattern: /SKIP\s*THE|SKIPTHED/i,    merchant: 'Skip the Dishes',     icon: '🛵', cat: 'food' },
+  { pattern: /UBER\s*EAT/i,             merchant: 'Uber Eats',           icon: '🛵', cat: 'food' },
+  { pattern: /DOORDASH/i,               merchant: 'DoorDash',            icon: '🛵', cat: 'food' },
+  { pattern: /WALMART|WAL-MART/i,       merchant: 'Walmart',             icon: '🛒', cat: 'grocery' },
+  { pattern: /LOBLAWS/i,                merchant: 'Loblaws',             icon: '🛒', cat: 'grocery' },
+  { pattern: /NO\s*FRILLS/i,            merchant: 'No Frills',           icon: '🛒', cat: 'grocery' },
+  { pattern: /METRO\s*(GROCERY|STORE)/i,merchant: 'Metro',               icon: '🛒', cat: 'grocery' },
+  { pattern: /COSTCO/i,                 merchant: 'Costco',              icon: '🛒', cat: 'grocery' },
+  { pattern: /FRESHCO/i,                merchant: 'FreshCo',             icon: '🛒', cat: 'grocery' },
+  { pattern: /PETRO.CAN|PETRO-CAN/i,   merchant: 'Petro-Canada',        icon: '⛽', cat: 'transport' },
+  { pattern: /ESSO/i,                    merchant: 'Esso',                icon: '⛽', cat: 'transport' },
+  { pattern: /SHELL/i,                   merchant: 'Shell',               icon: '⛽', cat: 'transport' },
+  { pattern: /UBER(?!\s*EAT)/i,         merchant: 'Uber',                icon: '🚗', cat: 'transport' },
+  { pattern: /PRESTO/i,                  merchant: 'Presto',              icon: '🚌', cat: 'transport' },
+  { pattern: /TTC|TORONTO\s*TRANSIT/i,  merchant: 'TTC',                 icon: '🚌', cat: 'transport' },
+  { pattern: /AMAZON(?!\s*PRIME)/i,     merchant: 'Amazon',              icon: '📦', cat: 'shopping' },
+  { pattern: /CDN\s*TIRE|CANADIAN\s*TIRE/i, merchant: 'Canadian Tire',   icon: '🔧', cat: 'shopping' },
+  { pattern: /BEST\s*BUY/i,             merchant: 'Best Buy',            icon: '📺', cat: 'shopping' },
+  { pattern: /SHOPPERS|SDM/i,           merchant: 'Shoppers Drug Mart',  icon: '💊', cat: 'health' },
+  { pattern: /REXALL/i,                  merchant: 'Rexall',              icon: '💊', cat: 'health' },
+  { pattern: /NETFLIX/i,                 merchant: 'Netflix',             icon: '📺', cat: 'subscriptions' },
+  { pattern: /SPOTIFY/i,                 merchant: 'Spotify',             icon: '🎵', cat: 'subscriptions' },
+  { pattern: /APPLE\.COM|APPLE INC|ITUNES/i, merchant: 'Apple',         icon: '🍎', cat: 'subscriptions' },
+  { pattern: /AMAZON\s*PRIME/i,         merchant: 'Amazon Prime',        icon: '📦', cat: 'subscriptions' },
+  { pattern: /ROGERS/i,                  merchant: 'Rogers',              icon: '📡', cat: 'subscriptions' },
+  { pattern: /BELL\s*(CANADA|MOB)?/i,   merchant: 'Bell',                icon: '📡', cat: 'subscriptions' },
+  { pattern: /TELUS/i,                   merchant: 'Telus',               icon: '📡', cat: 'subscriptions' },
+  { pattern: /DISNEY\+|DISNEY PLUS/i,   merchant: 'Disney+',             icon: '🎬', cat: 'subscriptions' },
+];
+
+// ─── STATE ───────────────────────────────────────────
+let state = {
+  budget: 3000,
+  currency: '$',
+  transactions: [],
+  catLimits: {
+    food: 300, grocery: 500, transport: 300,
+    housing: 800, subscriptions: 100, health: 150,
+    shopping: 200, entertainment: 100, other: 100
+  },
+  customMerchants: [],
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('myfinance_v1');
+    if (s) Object.assign(state, JSON.parse(s));
+  } catch(e) {}
+}
+function saveState() {
+  try { localStorage.setItem('myfinance_v1', JSON.stringify(state)); } catch(e) {}
+}
+loadState();
+
+// ─── HELPERS ─────────────────────────────────────────
+function fmt(n) { return state.currency + Math.abs(n).toFixed(2); }
+function today() { return new Date().toISOString().slice(0,10); }
+function yesterday() { const d = new Date(); d.setDate(d.getDate()-1); return d.toISOString().slice(0,10); }
+function monthKey() { const d = new Date(); return d.getFullYear()+'-'+(d.getMonth()+1); }
+function fmtDate(iso) {
+  const d = new Date(iso+'T12:00:00');
+  const t = new Date(); const y = new Date(); y.setDate(y.getDate()-1);
+  if (iso === today()) return 'Today';
+  if (iso === yesterday()) return 'Yesterday';
+  return d.toLocaleDateString('en-CA', { month:'short', day:'numeric' });
+}
+function thisMonthTx() {
+  const now = new Date();
+  return state.transactions.filter(t => {
+    const d = new Date(t.date+'T12:00:00');
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  });
+}
+function todayTx() { return state.transactions.filter(t => t.date === today()); }
+function catBadgeClass(cat) { return CATS[cat]?.badge || 'other-badge'; }
+function catLabel(cat) { return CATS[cat]?.label || 'Other'; }
+function catIcon(cat) { return CATS[cat]?.icon || '💡'; }
+function catColor(cat) { return CATS[cat]?.color || '#9090a8'; }
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+function allMerchants() { return [...PRELOADED_MERCHANTS, ...state.customMerchants]; }
+
+// ─── NAV ─────────────────────────────────────────────
+let currentPage = 'dashboard';
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  const nav = document.getElementById('nav-'+p);
+  if (nav) nav.classList.add('active');
+  currentPage = p;
+  if (p==='dashboard') renderDashboard();
+  if (p==='categories') renderCategories();
+  if (p==='insights') renderInsights();
+  if (p==='settings') renderSettings();
+  if (p==='add') renderAddPage();
+  window.scrollTo(0,0);
+}
+
+// ─── DASHBOARD ────────────────────────────────────────
+function renderDashboard() {
+  const mx = thisMonthTx();
+  const spent = mx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const income = mx.filter(t=>t.type==='income').reduce((a,t)=>a+t.amount,0);
+  const left = state.budget - spent;
+  const pct = Math.min(100, Math.round(spent/state.budget*100)) || 0;
+  const circ = 239;
+  document.getElementById('ring-progress').style.strokeDashoffset = circ - (circ * pct/100);
+  document.getElementById('ring-progress').style.stroke = pct>80 ? '#f87171' : pct>60 ? '#fbbf24' : '#6c63ff';
+  document.getElementById('ring-pct').textContent = pct+'%';
+  document.getElementById('bi-budget').textContent = fmt(state.budget);
+  document.getElementById('bi-spent').textContent = fmt(spent);
+  document.getElementById('bi-left').textContent = fmt(left);
+  document.getElementById('bi-left').className = 'budget-item-val ' + (left < 0 ? 'red' : 'green');
+  document.getElementById('mini-bar-fill').style.width = pct+'%';
+  document.getElementById('mini-bar-fill').style.background = pct>80 ? '#f87171' : pct>60 ? '#fbbf24' : '#6c63ff';
+  document.getElementById('sum-income').textContent = fmt(income);
+  document.getElementById('sum-expenses').textContent = fmt(spent);
+  renderTxList('today-list', todayTx().slice(0,5), 'No expenses today yet');
+  renderTxList('recent-list', [...state.transactions].reverse().slice(0,8), 'No transactions yet');
+  const now = new Date();
+  document.getElementById('header-date').textContent = now.toLocaleDateString('en-CA',{weekday:'long',month:'long',day:'numeric'});
+}
+
+function renderTxList(id, txs, emptyMsg) {
+  const el = document.getElementById(id);
+  if (!txs.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">🧾</div>${emptyMsg}</div>`; return; }
+  el.innerHTML = txs.map(t => `
+    <div class="card-row">
+      <div class="m-icon">${t.icon||catIcon(t.cat)}</div>
+      <div style="flex:1;min-width:0">
+        <div class="exp-name">${t.merchant}</div>
+        <div class="exp-meta">${fmtDate(t.date)} · <span class="cat-pill ${catBadgeClass(t.cat)}">${catLabel(t.cat)}</span></div>
+      </div>
+      <div class="exp-amount ${t.type==='income'?'pos':'neg'}">${t.type==='income'?'+':'-'}${fmt(t.amount)}</div>
+    </div>`).join('');
+}
+
+// ─── ADD EXPENSE ──────────────────────────────────────
+let selectedCat = 'food';
+let selectedDate = 'today';
+let selectedSource = 'card';
+let selectedType = 'expense';
+let selectedMerchantObj = null;
+
+function renderAddPage() {
+  selectedCat = 'food'; selectedDate = 'today'; selectedSource = 'card'; selectedType = 'expense';
+  selectedMerchantObj = null;
+  document.getElementById('add-amount').value = '';
+  document.getElementById('add-merchant-display').value = '';
+  document.getElementById('add-note').value = '';
+  document.getElementById('add-date-picker').style.display = 'none';
+  ['dc-today','dc-yesterday','dc-pick'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('dc-today').classList.add('selected');
+  ['src-card','src-app','src-cash'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('src-card').classList.add('selected');
+  ['type-exp','type-inc'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('type-exp').classList.add('selected');
+  renderCatChips();
+}
+
+function renderCatChips() {
+  const el = document.getElementById('add-cat-chips');
+  el.innerHTML = Object.entries(CATS).map(([k,v]) =>
+    `<div class="chip ${k===selectedCat?'selected':''}" onclick="pickCat('${k}')">${v.icon} ${v.label}</div>`
+  ).join('');
+}
+
+function pickCat(k) { selectedCat = k; renderCatChips(); }
+function selectDate(d) {
+  selectedDate = d;
+  ['dc-today','dc-yesterday','dc-pick'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('dc-'+d).classList.add('selected');
+  document.getElementById('add-date-picker').style.display = d==='pick' ? 'block' : 'none';
+}
+function selectSource(s) {
+  selectedSource = s;
+  ['src-card','src-app','src-cash'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('src-'+s).classList.add('selected');
+}
+function selectType(t) {
+  selectedType = t;
+  ['type-exp','type-inc'].forEach(id => document.getElementById(id).classList.remove('selected'));
+  document.getElementById('type-'+( t==='expense'?'exp':'inc')).classList.add('selected');
+  if (t==='income') { selectedCat='income'; renderCatChips(); }
+  else { if(selectedCat==='income') { selectedCat='food'; renderCatChips(); } }
+}
+
+function saveExpense() {
+  const amount = parseFloat(document.getElementById('add-amount').value);
+  const merchant = document.getElementById('add-merchant-display').value.trim() || 'Unknown';
+  if (!amount || amount <= 0) { showToast('Please enter an amount'); return; }
+  let dateVal = today();
+  if (selectedDate==='yesterday') dateVal = yesterday();
+  else if (selectedDate==='pick') dateVal = document.getElementById('add-date-picker').value || today();
+  const tx = {
+    id: Date.now(),
+    merchant,
+    icon: selectedMerchantObj?.icon || catIcon(selectedCat),
+    cat: selectedCat,
+    amount,
+    date: dateVal,
+    type: selectedType,
+    source: selectedSource,
+    note: document.getElementById('add-note').value.trim(),
+  };
+  state.transactions.push(tx);
+  saveState();
+  showToast('✓ Expense saved!');
+  showPage('dashboard');
+}
+
+// ─── MERCHANT MODAL ───────────────────────────────────
+function openMerchantModal() {
+  document.getElementById('merchant-search').value = '';
+  renderMerchantList('');
+  document.getElementById('merchant-modal').classList.add('open');
+}
+function closeMerchantModal() { document.getElementById('merchant-modal').classList.remove('open'); }
+function filterMerchants(q) { renderMerchantList(q); }
+function renderMerchantList(q) {
+  const list = allMerchants().filter(m => !q || m.name.toLowerCase().includes(q.toLowerCase()));
+  const el = document.getElementById('merchant-list');
+  if (!list.length) { el.innerHTML = '<div style="padding:20px;text-align:center;color:var(--text3);font-size:13px">No merchants found</div>'; return; }
+  el.innerHTML = list.map((m,i) => `
+    <div class="merchant-item" onclick="selectMerchant(${allMerchants().indexOf(m)})">
+      <div class="m-icon" style="width:32px;height:32px;font-size:16px">${m.icon}</div>
+      <div>
+        <div class="mi-name">${m.name}</div>
+        <div class="mi-cat">${catLabel(m.cat)}</div>
+      </div>
+      <span class="mi-check">✓</span>
+    </div>`).join('');
+}
+function selectMerchant(i) {
+  const m = allMerchants()[i];
+  selectedMerchantObj = m;
+  document.getElementById('add-merchant-display').value = m.name;
+  selectedCat = m.cat;
+  if (m.cat === 'income') { selectedType = 'income'; document.getElementById('type-exp').classList.remove('selected'); document.getElementById('type-inc').classList.add('selected'); }
+  renderCatChips();
+  closeMerchantModal();
+}
+
+// ─── CATEGORIES ───────────────────────────────────────
+function renderCategories() {
+  const now = new Date();
+  document.getElementById('cat-month-label').textContent =
+    now.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  const mx = thisMonthTx().filter(t=>t.type==='expense');
+  const el = document.getElementById('cat-budget-list');
+  el.innerHTML = Object.entries(CATS).filter(([k])=>k!=='income').map(([k,v]) => {
+    const spent = mx.filter(t=>t.cat===k).reduce((a,t)=>a+t.amount,0);
+    const limit = state.catLimits[k] || 0;
+    const pct = limit ? Math.min(100, Math.round(spent/limit*100)) : 0;
+    const left = limit - spent;
+    const barColor = pct>=100 ? '#f87171' : pct>=80 ? '#fbbf24' : v.color;
+    return `<div class="cat-budget-row">
+      <div class="cbr-top">
+        <div class="m-icon" style="width:34px;height:34px;font-size:16px;background:${v.color}22">${v.icon}</div>
+        <div class="cbr-name">${v.label}</div>
+        <div class="cbr-amounts">${fmt(spent)} / ${limit?fmt(limit):'No limit'}</div>
+      </div>
+      <div class="cbr-bar"><div class="cbr-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      <div class="cbr-bottom">
+        <span class="cbr-status" style="color:${pct>=100?'#f87171':pct>=80?'#fbbf24':'var(--text3)'}">
+          ${limit ? (pct>=100 ? fmt(spent-limit)+' over limit' : fmt(left)+' remaining') : 'No limit set'}
+        </span>
+        <span class="cbr-edit" onclick="openCatLimitModal('${k}')">Edit limit</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+let editingCat = null;
+function openCatLimitModal(cat) {
+  editingCat = cat;
+  document.getElementById('clm-title').textContent = 'Set limit · ' + catLabel(cat);
+  const cur = state.catLimits[cat] || 0;
+  document.getElementById('clm-slider').value = cur;
+  document.getElementById('clm-val').textContent = fmt(cur);
+  document.getElementById('cat-limit-modal').classList.add('open');
+}
+function updateCatLimit(v) { document.getElementById('clm-val').textContent = state.currency+parseInt(v); }
+function saveCatLimit() {
+  state.catLimits[editingCat] = parseInt(document.getElementById('clm-slider').value);
+  saveState(); closeCatLimitModal(); renderCategories(); showToast('Limit saved!');
+}
+function closeCatLimitModal() { document.getElementById('cat-limit-modal').classList.remove('open'); }
+
+// ─── BANK STATEMENT ───────────────────────────────────
+let parsedBankTxs = [];
+function handleBankUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    parsedBankTxs = parseBankStatement(text, file.name);
+    renderBankResults();
+  };
+  if (file.name.endsWith('.csv')) reader.readAsText(file);
+  else reader.readAsText(file); // PDF text extraction fallback
+}
+
+function parseBankStatement(text, filename) {
+  const lines = text.split(/\r?\n/).filter(l => l.trim());
+  const results = [];
+  const amountRe = /\$?\s*(\d{1,6}[.,]\d{2})/;
+  const dateRe = /(\d{4}[-\/]\d{2}[-\/]\d{2}|\d{2}[-\/]\d{2}[-\/]\d{4}|\w{3}\s+\d{1,2}\s+\d{4})/;
+
+  lines.forEach(line => {
+    const amountMatch = line.match(amountRe);
+    if (!amountMatch) return;
+    const amount = parseFloat(amountMatch[1].replace(',','.'));
+    if (amount < 0.5 || amount > 50000) return;
+    const dateMatch = line.match(dateRe);
+    const dateStr = dateMatch ? dateMatch[0] : today();
+    let parsedDate = today();
+    try { const d = new Date(dateStr); if (!isNaN(d)) parsedDate = d.toISOString().slice(0,10); } catch(e){}
+    const upper = line.toUpperCase();
+    let matched = null;
+    for (const p of BANK_PATTERNS) {
+      if (p.pattern.test(upper)) { matched = p; break; }
+    }
+    const existing = state.transactions.find(t =>
+      Math.abs(t.amount - amount) < 0.02 && t.date === parsedDate
+    );
+    results.push({
+      raw: line.trim().slice(0,60),
+      merchant: matched ? matched.merchant : 'Unknown merchant',
+      icon: matched ? matched.icon : '❓',
+      cat: matched ? matched.cat : 'other',
+      amount,
+      date: parsedDate,
+      confidence: matched ? 95 : 0,
+      alreadyLogged: !!existing,
+      needsReview: !matched,
+    });
+  });
+  return results.slice(0,30);
+}
+
+function renderBankResults() {
+  if (!parsedBankTxs.length) { showToast('No transactions found. Try a CSV file.'); return; }
+  document.getElementById('bank-results').style.display = 'block';
+  const matched = parsedBankTxs.filter(t=>!t.needsReview).length;
+  const needs = parsedBankTxs.filter(t=>t.needsReview).length;
+  document.getElementById('bank-match-summary').textContent = `${matched} matched · ${needs} need review`;
+  const el = document.getElementById('bank-tx-list');
+  el.innerHTML = parsedBankTxs.map((t,i) => `
+    <div class="bank-tx-row">
+      <div class="bank-dot" style="background:${t.needsReview?'#f87171':t.alreadyLogged?'#fbbf24':'#34d399'}"></div>
+      <div class="bank-info">
+        <div class="bank-name">${t.icon} ${t.merchant}</div>
+        <div class="bank-raw">${t.raw}</div>
+        <span class="bank-match ${t.needsReview?'match-bad':t.alreadyLogged?'match-warn':'match-ok'}">
+          ${t.needsReview ? 'Needs your input' : t.alreadyLogged ? 'Already logged' : catLabel(t.cat)+' · '+t.confidence+'% match'}
+        </span>
+      </div>
+      <div class="bank-amount">-${fmt(t.amount)}</div>
+    </div>`).join('');
+}
+
+function importMatched() {
+  const toImport = parsedBankTxs.filter(t => !t.needsReview && !t.alreadyLogged);
+  toImport.forEach(t => {
+    state.transactions.push({
+      id: Date.now() + Math.random(),
+      merchant: t.merchant, icon: t.icon, cat: t.cat,
+      amount: t.amount, date: t.date,
+      type: 'expense', source: 'card', note: 'Imported from bank statement',
+    });
+  });
+  saveState();
+  showToast(`✓ ${toImport.length} transactions imported!`);
+  renderDashboard();
+}
+
+// ─── INSIGHTS ─────────────────────────────────────────
+function renderInsights() {
+  const now = new Date();
+  document.getElementById('insights-month').textContent =
+    now.toLocaleDateString('en-CA',{month:'long',year:'numeric'});
+  const mx = thisMonthTx();
+  const spent = mx.filter(t=>t.type==='expense').reduce((a,t)=>a+t.amount,0);
+  const left = state.budget - spent;
+  document.getElementById('ins-spent').textContent = fmt(spent);
+  document.getElementById('ins-left').textContent = fmt(left);
+  document.getElementById('ins-left').style.color = left < 0 ? 'var(--red)' : 'var(--green)';
+
+  // By category
+  const byCat = {};
+  mx.filter(t=>t.type==='expense').forEach(t => { byCat[t.cat] = (byCat[t.cat]||0) + t.amount; });
+  const maxCat = Math.max(...Object.values(byCat), 1);
+  const barsEl = document.getElementById('ins-bars');
+  if (!Object.keys(byCat).length) { barsEl.innerHTML = '<div class="empty"><div class="empty-icon">📊</div>No data yet</div>'; }
+  else {
+    barsEl.innerHTML = Object.entries(byCat).sort((a,b)=>b[1]-a[1]).map(([k,v]) => `
+      <div class="insight-bar-row">
+        <div class="insight-name">${catIcon(k)} ${catLabel(k)}</div>
+        <div class="insight-bar-track"><div class="insight-bar-fill" style="width:${Math.round(v/maxCat*100)}%;background:${catColor(k)}"></div></div>
+        <div class="insight-val">${fmt(v)}</div>
+      </div>`).join('');
+  }
+
+  // Top merchants
+  const byMerchant = {};
+  mx.filter(t=>t.type==='expense').forEach(t => {
+    if (!byMerchant[t.merchant]) byMerchant[t.merchant] = { amount:0, icon:t.icon, cat:t.cat };
+    byMerchant[t.merchant].amount += t.amount;
+  });
+  const topM = Object.entries(byMerchant).sort((a,b)=>b[1].amount-a[1].amount).slice(0,5);
+  const mEl = document.getElementById('ins-merchants');
+  if (!topM.length) { mEl.innerHTML = '<div class="empty"><div class="empty-icon">🏪</div>No data yet</div>'; }
+  else {
+    mEl.innerHTML = topM.map(([name,d]) => `
+      <div class="card-row">
+        <div class="m-icon">${d.icon}</div>
+        <div style="flex:1"><div class="exp-name">${name}</div><div class="exp-meta"><span class="cat-pill ${catBadgeClass(d.cat)}">${catLabel(d.cat)}</span></div></div>
+        <div class="exp-amount neg">${fmt(d.amount)}</div>
+      </div>`).join('');
+  }
+}
+
+// ─── SETTINGS ─────────────────────────────────────────
+function renderSettings() {
+  document.getElementById('set-budget').value = state.budget;
+  const el = document.getElementById('settings-cat-limits');
+  el.innerHTML = Object.entries(CATS).filter(([k])=>k!=='income').map(([k,v]) => `
+    <div class="settings-row">
+      <span class="settings-label">${v.icon} ${v.label}</span>
+      <input class="settings-input" type="number" value="${state.catLimits[k]||0}"
+        onchange="state.catLimits['${k}']=parseInt(this.value)||0;saveState()">
+    </div>`).join('');
+}
+function saveSetting(key, val) {
+  if (key==='budget') state.budget = parseFloat(val)||3000;
+  if (key==='currency') state.currency = val;
+  saveState(); renderDashboard(); showToast('Saved!');
+}
+function addCustomMerchant() {
+  const name = document.getElementById('cust-merchant-name').value.trim();
+  const icon = document.getElementById('cust-merchant-icon').value.trim() || '🏪';
+  const cat  = document.getElementById('cust-merchant-cat').value;
+  if (!name) { showToast('Please enter a merchant name'); return; }
+  state.customMerchants.push({ name, icon, cat });
+  saveState();
+  document.getElementById('cust-merchant-name').value = '';
+  document.getElementById('cust-merchant-icon').value = '';
+  showToast('✓ Merchant added!');
+}
+function exportData() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'myfinance-backup.json'; a.click();
+}
+function confirmClear() {
+  if (confirm('Delete ALL data? This cannot be undone.')) {
+    state.transactions = []; state.customMerchants = [];
+    saveState(); renderDashboard(); showToast('Data cleared');
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────
+renderDashboard();
+</script>
+</body>
+</html>
